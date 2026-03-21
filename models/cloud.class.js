@@ -1,12 +1,13 @@
 class Cloud extends MovableObject {
-    position_y = 20;
-    height = 300;
-    width = 450;
+    position_y = 0;
+    height = 480;
+    width = 720;
 
 
     constructor(path) {
         super().loadImage(path);
 
-        this.position_x = Math.random() * 500;
+        this.position_x = Math.random() * 720;
+        this.moveLeft();
     }
 }

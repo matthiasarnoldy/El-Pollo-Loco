@@ -9,9 +9,10 @@ class World {
     ];
     clouds = [
         new Cloud("assets/img/5_background/layers/4_clouds/1.png"),
-        new Cloud("assets/img/5_background/layers/4_clouds/2.png"),
+        // new Cloud("assets/img/5_background/layers/4_clouds/2.png"),
     ];
     backgroundObjects = [
+        new BackgroundObject("assets/img/5_background/layers/air.png"),
         new BackgroundObject("assets/img/5_background/layers/3_third_layer/1.png"),
         // new BackgroundObject("assets/img/5_background/layers/3_third_layer/2.png"),
         new BackgroundObject("assets/img/5_background/layers/2_second_layer/1.png"),
@@ -34,8 +35,8 @@ class World {
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-        this.addObjectsToMap(this.clouds);
         this.addObjectsToMap(this.backgroundObjects);
+        this.addObjectsToMap(this.clouds);
         this.addToMap(this.character);
         this.addObjectsToMap(this.enemies);
 
