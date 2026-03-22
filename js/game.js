@@ -14,7 +14,6 @@ window.addEventListener("keydown", (event) => {
         case "ArrowRight":
         case "KeyD":
             keyboard.RIGHT = true;
-            console.log(keyboard.RIGHT)
             break;
         case "ArrowLeft":
         case "KeyA":
