@@ -10,6 +10,8 @@ class MovableObject {
     speed_y = 0;
     acceleration = 1.5;
     otherDirection = false;
+    energy = 100;
+    touchDamage = 5;
     offset = {
         left: 0,
         right: 0,
