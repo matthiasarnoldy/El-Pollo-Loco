@@ -11,6 +11,18 @@ class MovableObject {
     acceleration = 1.5;
     otherDirection = false;
 
+    draw(ctx) {
+        ctx.drawImage(this.img, this.position_x, this.position_y, this.width, this.height);
+    }
+
+    drawFrame(ctx) {
+        ctx.beginPath();
+        ctx.lineWidth = "5";
+        ctx.strokeStyle = "blue";
+        ctx.rect(this.position_x, this.position_y, this.width, this.height);
+        ctx.stroke();
+    }
+
     applyGravity() {
         setInterval(() => {
             if (this.isAboveGround() || this.speed_y > 0) {
