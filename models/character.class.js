@@ -3,8 +3,13 @@ class Character extends MovableObject {
     width = 112;
     position_x = 0;
     position_y = 198;
-    // position_y = 0;
     speed = 4;
+    offset = {
+        left: 25,
+        right: 35,
+        top: 110,
+        bottom: 10
+    };
     IMAGES_WALKING = [
         "assets/img/2_character_pepe/2_walk/W-21.png",
         "assets/img/2_character_pepe/2_walk/W-22.png",
@@ -24,14 +29,56 @@ class Character extends MovableObject {
         "assets/img/2_character_pepe/3_jump/J-38.png",
         "assets/img/2_character_pepe/3_jump/J-39.png",
     ];
+    IMAGES_IDLE = [
+        "assets/img/2_character_pepe/1_idle/idle/I-1.png",
+        "assets/img/2_character_pepe/1_idle/idle/I-2.png",
+        "assets/img/2_character_pepe/1_idle/idle/I-3.png",
+        "assets/img/2_character_pepe/1_idle/idle/I-4.png",
+        "assets/img/2_character_pepe/1_idle/idle/I-5.png",
+        "assets/img/2_character_pepe/1_idle/idle/I-6.png",
+        "assets/img/2_character_pepe/1_idle/idle/I-7.png",
+        "assets/img/2_character_pepe/1_idle/idle/I-8.png",
+        "assets/img/2_character_pepe/1_idle/idle/I-9.png",
+        "assets/img/2_character_pepe/1_idle/idle/I-10.png",
+    ];
+    IMAGES_IDLE_LONG = [
+        "assets/img/2_character_pepe/1_idle/long_idle/I-11.png",
+        "assets/img/2_character_pepe/1_idle/long_idle/I-12.png",
+        "assets/img/2_character_pepe/1_idle/long_idle/I-13.png",
+        "assets/img/2_character_pepe/1_idle/long_idle/I-14.png",
+        "assets/img/2_character_pepe/1_idle/long_idle/I-15.png",
+        "assets/img/2_character_pepe/1_idle/long_idle/I-16.png",
+        "assets/img/2_character_pepe/1_idle/long_idle/I-17.png",
+        "assets/img/2_character_pepe/1_idle/long_idle/I-18.png",
+        "assets/img/2_character_pepe/1_idle/long_idle/I-19.png",
+        "assets/img/2_character_pepe/1_idle/long_idle/I-20.png",
+    ];
+    IMAGES_HURT = [
+        "assets/img/2_character_pepe/4_hurt/H-41.png",
+        "assets/img/2_character_pepe/4_hurt/H-42.png",
+        "assets/img/2_character_pepe/4_hurt/H-43.png",
+    ];
+    IMAGES_DEAD = [
+        "assets/img/2_character_pepe/5_dead/D-51.png",
+        "assets/img/2_character_pepe/5_dead/D-52.png",
+        "assets/img/2_character_pepe/5_dead/D-53.png",
+        "assets/img/2_character_pepe/5_dead/D-54.png",
+        "assets/img/2_character_pepe/5_dead/D-55.png",
+        "assets/img/2_character_pepe/5_dead/D-56.png",
+        "assets/img/2_character_pepe/5_dead/D-57.png",
+    ];
     world;
 
 
 
     constructor() {
-        super().loadImage(this.IMAGES_WALKING[0]);
+        super().loadImage(this.IMAGES_IDLE[0]);
         this.loadImages(this.IMAGES_WALKING);
         this.loadImages(this.IMAGES_JUMPING);
+        this.loadImages(this.IMAGES_IDLE);
+        this.loadImages(this.IMAGES_IDLE_LONG);
+        this.loadImages(this.IMAGES_HURT);
+        this.loadImages(this.IMAGES_DEAD);
         this.applyGravity();
         this.animate();
     }
