@@ -3,7 +3,7 @@ class Character extends MovableObject {
     width = 112;
     position_x = 0;
     position_y = 198;
-    speed = 4;
+    speed_x = 4;
     offset = {
         left: 25,
         right: 35,
@@ -97,7 +97,7 @@ class Character extends MovableObject {
                 this.moveRight();
             }
             if (this.world.keyboard.LEFT && this.position_x > -540) {
-                this.position_x -= this.speed;
+                this.position_x -= this.speed_x;
                 this.otherDirection = true;
             }
             if (this.world.keyboard.SPACE && !this.isAboveGround()) {

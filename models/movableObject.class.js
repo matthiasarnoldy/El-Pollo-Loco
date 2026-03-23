@@ -1,16 +1,8 @@
-class MovableObject {
-    position_x;
-    position_y;
-    img;
-    height;
-    width;
-    imageCache = {};
-    currentImage = 0;
-    speed = 0.1;
+class MovableObject extends DrawableObject {
+    speed_x = 0.1;
     speed_y = 0;
     acceleration = 1.5;
     otherDirection = false;
-    energy = 100;
     touchDamage = 5;
     lastHit = 0;
     offset = {
@@ -19,31 +11,6 @@ class MovableObject {
         top: 0,
         bottom: 0
     };
-
-    draw(ctx) {
-        ctx.drawImage(this.img, this.position_x, this.position_y, this.width, this.height);
-    }
-
-    drawFrame(ctx) {
-        if (this instanceof Character || this instanceof Chicken || this instanceof Chicken_small || this instanceof Endboss) {
-            // ctx.beginPath();
-            // ctx.lineWidth = "5";
-            // ctx.strokeStyle = "blue";
-            // ctx.rect(this.position_x, this.position_y, this.width, this.height);
-            // ctx.stroke();
-
-            ctx.beginPath();
-            ctx.lineWidth = "2";
-            ctx.strokeStyle = "red";
-            ctx.rect(
-                this.getHitboxLeft(),
-                this.getHitboxTop(),
-                this.getHitboxRight() - this.getHitboxLeft(),
-                this.getHitboxBottom() - this.getHitboxTop()
-            );
-            ctx.stroke();
-        }
-    }
 
     applyGravity() {
         if (this.gravityInterval) return;
@@ -63,19 +30,6 @@ class MovableObject {
         return this.position_y < 198;
     }
 
-    loadImage(path) {
-        this.img = new Image();
-        this.img.src = path;
-    }
-
-    loadImages(arr) {
-        arr.forEach((path) => {
-            let img = new Image();
-            img.src = path;
-            this.imageCache[path] = img;
-        });
-    }
-
     playAnimation(images) {
         let i = this.currentImage % images.length;
         let path = images[i];
@@ -83,9 +37,16 @@ class MovableObject {
         this.currentImage++;
     }
 
+    playAnimationOnce(images) {
+        for (let index = 0; index < images.length; index++) {
+            let path = images[index];
+            this.img = this.imageCache[path];
+        }
+    }
+
     playAnimations() {
         if (this.isDead()) {
-            this.playAnimation(this.IMAGES_DEAD);
+            this.playAnimationOnce(this.IMAGES_DEAD);
         } else if (this.isHurt()) {
             this.playAnimation(this.IMAGES_HURT);
         } else if (this.isAboveGround()) {
@@ -99,10 +60,10 @@ class MovableObject {
 
     moveLeft() {
         if (this.position_x > -720) {
-            this.position_x -= this.speed;
+            this.position_x -= this.speed_x;
         } else {
             this.position_x = Math.random() * 5700;
-            this.position_x -= this.speed;
+            this.position_x -= this.speed_x;
         }
         let self = this;
         requestAnimationFrame(function() {
@@ -111,7 +72,7 @@ class MovableObject {
     }
 
     moveRight() {
-        this.position_x += this.speed;
+        this.position_x += this.speed_x;
         this.otherDirection = false;
     }
 
@@ -143,9 +104,9 @@ class MovableObject {
     }
 
     hit(enemy) {
-        this.energy -= enemy.touchDamage;
-        if (this.energy < 0) {
-            this.energy = 0
+        this.health -= enemy.touchDamage;
+        if (this.health < 0) {
+            this.health = 0
         } else {
             this.lastHit = new Date().getTime();
         }
@@ -157,6 +118,6 @@ class MovableObject {
     }
 
     isDead() {
-        return this.energy == 0;
+        return this.health == 0;
     }
 }
