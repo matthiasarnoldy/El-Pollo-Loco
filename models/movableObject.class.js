@@ -13,7 +13,7 @@ class MovableObject {
 
     applyGravity() {
         setInterval(() => {
-            if (this.isAboveGround()) {
+            if (this.isAboveGround() || this.speed_y > 0) {
                 this.position_y -= this.speed_y;
                 this.speed_y -= this.acceleration;
             }
@@ -58,6 +58,11 @@ class MovableObject {
     }
 
     moveRight() {
-        console.log("Moving right");
+        this.position_x += this.speed;
+        this.otherDirection = false;
+    }
+
+    jump() {
+        this.speed_y = 20;
     }
 }
