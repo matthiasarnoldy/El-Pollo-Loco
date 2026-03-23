@@ -12,6 +12,7 @@ class MovableObject {
     otherDirection = false;
     energy = 100;
     touchDamage = 5;
+    lastHit = 0;
     offset = {
         left: 0,
         right: 0,
@@ -82,6 +83,20 @@ class MovableObject {
         this.currentImage++;
     }
 
+    playAnimations() {
+        if (this.isDead()) {
+            this.playAnimation(this.IMAGES_DEAD);
+        } else if (this.isHurt()) {
+            this.playAnimation(this.IMAGES_HURT);
+        } else if (this.isAboveGround()) {
+            this.playAnimation(this.IMAGES_JUMPING);
+        } else if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
+            this.playAnimation(this.IMAGES_WALKING);
+        } else {
+            this.setDefaultImage();
+        }
+    }
+
     moveLeft() {
         if (this.position_x > -720) {
             this.position_x -= this.speed;
@@ -125,5 +140,23 @@ class MovableObject {
                this.getHitboxLeft() < mo.getHitboxRight() &&
                this.getHitboxBottom() > mo.getHitboxTop() &&
                this.getHitboxTop() < mo.getHitboxBottom();
+    }
+
+    hit(enemy) {
+        this.energy -= enemy.touchDamage;
+        if (this.energy < 0) {
+            this.energy = 0
+        } else {
+            this.lastHit = new Date().getTime();
+        }
+    }
+
+    isHurt() {
+        let timePassed = new Date().getTime() - this.lastHit;
+        return timePassed < 1000;
+    }
+
+    isDead() {
+        return this.energy == 0;
     }
 }
