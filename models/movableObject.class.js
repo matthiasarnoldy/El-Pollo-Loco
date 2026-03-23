@@ -1,9 +1,9 @@
 class MovableObject {
-    position_x = 120;
-    position_y = 250;
+    position_x;
+    position_y;
     img;
-    height = 150;
-    width = 100;
+    height;
+    width;
     imageCache = {};
     currentImage = 0;
     speed = 0.1;
@@ -22,11 +22,18 @@ class MovableObject {
         });
     }
 
+    playAnimation() {
+        let i = this.currentImage % this.IMAGES_WALKING.length;
+        let path = this.IMAGES_WALKING[i];
+        this.img = this.imageCache[path];
+        this.currentImage++;
+    }
+
     moveLeft() {
-        if (this.position_x > 0) {
+        if (this.position_x > -720) {
             this.position_x -= this.speed;
         } else {
-            this.position_x = Math.random() * 720;
+            this.position_x = Math.random() * 5700;
             this.position_x -= this.speed;
         }
         let self = this;
