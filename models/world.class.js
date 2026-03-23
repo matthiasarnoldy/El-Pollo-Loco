@@ -31,9 +31,10 @@ class World {
         this.addObjectsToMap(this.level.clouds);
         this.addToMap(this.character);
         this.addObjectsToMap(this.level.enemies);
-        this.addToMap(this.statusbar);
 
         this.ctx.translate(-this.camera_x, 0);
+
+        this.ctx.drawImage(this.statusbar.img, this.statusbar.position_x, this.statusbar.position_y, this.statusbar.width, this.statusbar.height);
 
         let self = this;
         requestAnimationFrame(function() {

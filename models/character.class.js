@@ -4,6 +4,7 @@ class Character extends MovableObject {
     position_x = 0;
     position_y = 198;
     speed_x = 4;
+    health = 100;
     offset = {
         left: 25,
         right: 35,
