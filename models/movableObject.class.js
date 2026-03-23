@@ -43,10 +43,15 @@ class MovableObject {
     }
 
     applyGravity() {
-        setInterval(() => {
+        if (this.gravityInterval) return;
+        this.gravityInterval = setInterval(() => {
             if (this.isAboveGround() || this.speed_y > 0) {
                 this.position_y -= this.speed_y;
                 this.speed_y -= this.acceleration;
+            }
+            if (this.position_y > 198) {
+                this.position_y = 198;
+                this.speed_y = 0;
             }
         }, 1000 / 25);
     }

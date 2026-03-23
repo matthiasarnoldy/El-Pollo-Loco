@@ -14,6 +14,7 @@ class World {
         this.draw();
         this.setWorld();
         this.checkCollisions();
+        this.character.applyGravity();
     }
 
     setWorld() {
