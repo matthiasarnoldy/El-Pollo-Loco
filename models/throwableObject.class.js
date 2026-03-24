@@ -6,6 +6,7 @@ class ThrowableObject extends MovableObject {
     damage = 40;
     hasHit = false;
     isRemoved = false;
+    groundBottom_y = 428;
     rotatingInterval;
     IMAGES_ROTATING = [
         "assets/img/6_salsa_bottle/bottle_rotation/1_bottle_rotation.png",
@@ -41,9 +42,10 @@ class ThrowableObject extends MovableObject {
         this.speed_y = 15;
         this.applyGravity();
         setInterval(() => {
-            this.hitEnemy();
             if (this.hasHit) return;
             this.position_x += this.otherDirection ? -8 : 8;
+            this.hitEnemy();
+            this.hitGround();
         }, 1000 / 60);
     }
 
@@ -59,6 +61,19 @@ class ThrowableObject extends MovableObject {
                 this.removeThrowableObject();
             }
         });
+    }
+
+    hitGround() {
+        if (this.hasHit) return;
+        const bottom = this.position_y + this.height;
+        if (bottom >= this.groundBottom_y) {
+            this.position_y = this.groundBottom_y - this.height;
+            this.hasHit = true;
+            this.stopGravity();
+            clearInterval(this.throwInterval);
+            this.playSplashAnimation();
+            this.removeThrowableObject();
+        }
     }
 
     removeThrowableObject() {
