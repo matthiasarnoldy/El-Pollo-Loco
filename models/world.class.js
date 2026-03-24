@@ -6,6 +6,7 @@ class World {
     canvas;
     ctx;
     keyboard;
+    throwKeyHandled = false;
     camera_x = 0;
 
 
@@ -78,22 +79,34 @@ class World {
         setInterval(() => {
             this.checkCollisions();
             this.checkThrowObjects();
-        }, 200);
+        }, 1000 / 60);
     }
 
     checkCollisions() {
         this.level.enemies.forEach((enemy) => {
             if (this.character.isColliding(enemy)) {
-                this.character.hit(enemy);
-                this.statusbar_health.setPercentage(this.character.health);
+                const isAboveEnemy = this.character.getLastHitboxBottom() <= enemy.getHitboxTop() + 10;
+                const isFalling = this.character.speed_y <= 0;
+                const isStomp = isAboveEnemy && isFalling;
+                if (isStomp) {
+                    // enemy.die();
+                    this.character.speed_y = 10;
+                } else {
+                    this.character.hit(enemy);
+                    this.statusbar_health.setPercentage(this.character.health);
+                }
             }
-        })
+        });
     }
 
     checkThrowObjects() {
-        if (this.keyboard.THROW) {
-            let bottle = new ThrowableObject(this.character.position_x + 50, this.character.position_y + 100);
+        if (this.keyboard.THROW && !this.throwKeyHandled) {
+            let bottle = new ThrowableObject(this.character.position_x + 50, this.character.position_y + 100, this.character.otherDirection);
             this.throwableObjects.push(bottle);
+            this.throwKeyHandled = true;
+        }
+        if (!this.keyboard.THROW) {
+            this.throwKeyHandled = false;
         }
     }
 }

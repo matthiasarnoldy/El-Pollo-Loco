@@ -3,7 +3,7 @@ class Endboss extends MovableObject {
     width = 300;
     position_x = 5700;
     position_y = 90;
-    touchDamage = 10;
+    touchDamage = 0.8;
     offset = {
         left: 25,
         right: 35,

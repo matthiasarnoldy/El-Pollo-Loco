@@ -1,10 +1,14 @@
 class MovableObject extends DrawableObject {
     speed_x = 0.1;
     speed_y = 0;
-    acceleration = 1.5;
+    acceleration = 0.625;
     otherDirection = false;
     touchDamage = 5;
     lastHit = 0;
+    lastPosition_y = 0;
+    onceIndex = 0;
+    onceDone = false;
+    jumpKeyHandled = false;
     offset = {
         left: 0,
         right: 0,
@@ -14,6 +18,7 @@ class MovableObject extends DrawableObject {
 
     applyGravity() {
         setInterval(() => {
+            this.lastPosition_y =this.position_y;
             if (this.isAboveGround() || this.speed_y > 0) {
                 this.position_y -= this.speed_y;
                 this.speed_y -= this.acceleration;
@@ -22,7 +27,7 @@ class MovableObject extends DrawableObject {
                 this.position_y = 198;
                 this.speed_y = 0;
             }
-        }, 1000 / 25);
+        }, 1000 / 60);
     }
 
     isAboveGround() {
@@ -41,9 +46,14 @@ class MovableObject extends DrawableObject {
     }
 
     playAnimationOnce(images) {
-        for (let index = 0; index < images.length; index++) {
-            let path = images[index];
-            this.img = this.imageCache[path];
+        if (this.onceDone) return;
+
+        this.img = this.imageCache[images[this.onceIndex]];
+
+        if (this.onceIndex < images.length - 1) {
+            this.onceIndex++;
+        } else {
+            this.onceDone = true;
         }
     }
 
@@ -80,7 +90,7 @@ class MovableObject extends DrawableObject {
     }
 
     jump() {
-        this.speed_y = 20;
+        this.speed_y = 14;
     }
     
 
@@ -98,6 +108,10 @@ class MovableObject extends DrawableObject {
 
     getHitboxBottom() {
         return this.position_y + this.height - this.offset.bottom;
+    }
+
+    getLastHitboxBottom() {
+        return this.lastPosition_y + this.height - this.offset.bottom;
     }
 
     isColliding(mo) {
