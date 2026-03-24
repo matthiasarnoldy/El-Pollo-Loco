@@ -19,6 +19,10 @@ window.addEventListener("keydown", (event) => {
         case "KeyA":
             keyboard.LEFT = true;
             break;
+        case "Enter":
+        case "KeyF":
+            keyboard.THROW = true;
+            break;
         case "Space":
             keyboard.SPACE = true;
             break;
@@ -34,6 +38,10 @@ window.addEventListener("keyup", (event) => {
         case "ArrowLeft":
         case "KeyA":
             keyboard.LEFT = false;
+            break;
+        case "Enter":
+        case "KeyF":
+            keyboard.THROW = false;
             break;
         case "Space":
             keyboard.SPACE = false;

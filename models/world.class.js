@@ -1,6 +1,7 @@
 class World {
     character = new Character();
-    statusbar = new Statusbar();
+    statusbar_health = new Statusbar();
+    throwableObjects = [];
     level = level1;
     canvas;
     ctx;
@@ -14,7 +15,7 @@ class World {
         this.keyboard = keyboard;
         this.draw();
         this.setWorld();
-        this.checkCollisions();
+        this.runInterval();
         this.character.applyGravity();
     }
 
@@ -26,15 +27,17 @@ class World {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
         this.ctx.translate(this.camera_x, 0);
-
         this.addObjectsToMap(this.level.backgroundObjects);
         this.addObjectsToMap(this.level.clouds);
-        this.addToMap(this.character);
-        this.addObjectsToMap(this.level.enemies);
 
         this.ctx.translate(-this.camera_x, 0);
+        this.addToMap(this.statusbar_health);
+        this.ctx.translate(this.camera_x, 0);
 
-        this.ctx.drawImage(this.statusbar.img, this.statusbar.position_x, this.statusbar.position_y, this.statusbar.width, this.statusbar.height);
+        this.addToMap(this.character);
+        this.addObjectsToMap(this.level.enemies);
+        this.addObjectsToMap(this.throwableObjects);
+        this.ctx.translate(-this.camera_x, 0);
 
         let self = this;
         requestAnimationFrame(function() {
@@ -71,14 +74,26 @@ class World {
         this.ctx.restore();
     }
 
-    checkCollisions() {
+    runInterval() {
         setInterval(() => {
-            this.level.enemies.forEach((enemy) => {
-                if (this.character.isColliding(enemy)) {
-                    this.character.hit(enemy);
-                    console.log("Collision with Character, health is", this.character.health)
-                }
-            })
+            this.checkCollisions();
+            this.checkThrowObjects();
         }, 200);
+    }
+
+    checkCollisions() {
+        this.level.enemies.forEach((enemy) => {
+            if (this.character.isColliding(enemy)) {
+                this.character.hit(enemy);
+                this.statusbar_health.setPercentage(this.character.health);
+            }
+        })
+    }
+
+    checkThrowObjects() {
+        if (this.keyboard.THROW) {
+            let bottle = new ThrowableObject(this.character.position_x + 50, this.character.position_y + 100);
+            this.throwableObjects.push(bottle);
+        }
     }
 }

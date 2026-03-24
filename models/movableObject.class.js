@@ -13,13 +13,12 @@ class MovableObject extends DrawableObject {
     };
 
     applyGravity() {
-        if (this.gravityInterval) return;
-        this.gravityInterval = setInterval(() => {
+        setInterval(() => {
             if (this.isAboveGround() || this.speed_y > 0) {
                 this.position_y -= this.speed_y;
                 this.speed_y -= this.acceleration;
             }
-            if (this.position_y > 198) {
+            if (this.position_y > 198 && !(this instanceof ThrowableObject)) {
                 this.position_y = 198;
                 this.speed_y = 0;
             }
@@ -27,7 +26,11 @@ class MovableObject extends DrawableObject {
     }
 
     isAboveGround() {
-        return this.position_y < 198;
+        if (this instanceof ThrowableObject) {
+            return true;
+        } else {
+            return this.position_y < 198;
+        }
     }
 
     playAnimation(images) {
@@ -79,6 +82,7 @@ class MovableObject extends DrawableObject {
     jump() {
         this.speed_y = 20;
     }
+    
 
     getHitboxLeft() {
         return this.position_x + this.offset.left;
