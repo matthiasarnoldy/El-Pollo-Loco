@@ -99,7 +99,6 @@ class Character extends MovableObject {
             this.characterMoveLeft();
             this.characterJump();
             this.updateCamera();
-            // this.world.camera_x = -this.position_x + 180;
         }, 1000 / 60)
         setInterval(() => {
             this.playAnimations();
@@ -132,10 +131,7 @@ class Character extends MovableObject {
         const followOffset = 180;
         const maxCameraX = 720;
         const minCameraX = -(this.world.level.level_end_x - this.world.canvas.width);
-
         const targetCameraX = -this.position_x + followOffset;
-
-        // Kamera clampen -> stoppt am Kartenende
         this.world.camera_x = Math.max(minCameraX, Math.min(maxCameraX, targetCameraX));
     }
 }

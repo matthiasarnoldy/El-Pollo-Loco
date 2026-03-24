@@ -23,6 +23,7 @@ class World {
     setWorld() {
         this.character.world = this;
         this.level.enemies.forEach((enemy) => enemy.world = this);
+        this.throwableObjects.forEach((bottle) => bottle.world = this);
     }
 
     draw() {
@@ -115,7 +116,7 @@ class World {
 
     checkThrowObjects() {
         if (this.keyboard.THROW && !this.throwKeyHandled) {
-            let bottle = new ThrowableObject(this.character.position_x + 50, this.character.position_y + 100, this.character.otherDirection);
+            let bottle = new ThrowableObject(this.character.position_x + 30, this.character.position_y + 100, this.character.otherDirection);
             this.throwableObjects.push(bottle);
             this.throwKeyHandled = true;
         }
