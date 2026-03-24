@@ -4,6 +4,7 @@ class Chicken extends MovableObject {
     position_y = 347;
     health = 40;
     touchDamage = 0.5;
+    isRemoved = false;
     offset = {
         left: 10,
         right: 10,
@@ -18,6 +19,7 @@ class Chicken extends MovableObject {
     IMAGES_DEAD = [
         "assets/img/3_enemies_chicken/chicken_normal/2_dead/dead.png"
     ];
+    world;
 
 
     constructor() {
@@ -38,6 +40,12 @@ class Chicken extends MovableObject {
                 this.playAnimationOnce(this.IMAGES_DEAD);
                 cancelAnimationFrame(this.animationID);
                 this.touchDamage = 0;
+                if (!this.isRemoved) {
+                    this.isRemoved = true;
+                    setTimeout(() => {
+                        this.world.level.enemies = this.world.level.enemies.filter(enemy => enemy !== this);
+                    }, 2000);
+                }
             } else {
                 this.playAnimation(this.IMAGES_WALKING);
             }

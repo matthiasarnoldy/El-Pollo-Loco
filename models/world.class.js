@@ -22,6 +22,7 @@ class World {
 
     setWorld() {
         this.character.world = this;
+        this.level.enemies.forEach((enemy) => enemy.world = this);
     }
 
     draw() {
@@ -86,20 +87,30 @@ class World {
         this.level.enemies.forEach((enemy) => {
             if (enemy.health <= 0) return;
             if (this.character.isColliding(enemy)) {
-                const isAboveEnemy = this.character.getLastHitboxBottom() <= enemy.getHitboxTop() + 10;
-                const isFalling = this.character.speed_y <= 0;
-                const isStomp = isAboveEnemy && isFalling;
-                if (isStomp) {
-                    // enemy.die();
-                    enemy.hit(this.character);
-                    console.log("Enemy health", enemy.health)
-                    this.character.speed_y = 10;
+                if (this.isStomp(enemy)) {
+                    this.characterStompEnemy(enemy);
                 } else {
-                    this.character.hit(enemy);
-                    this.statusbar_health.setPercentage(this.character.health);
+                    this.enemyHitCharacter(enemy);
                 }
             }
         });
+    }
+
+    isStomp(enemy) {
+        const isAboveEnemy = this.character.getLastHitboxBottom() <= enemy.getHitboxTop() + 10;
+        const isFalling = this.character.speed_y <= 0;
+        const isStomp = isAboveEnemy && isFalling;
+        return isStomp;
+    }
+
+    enemyHitCharacter(enemy) {
+        this.character.hit(enemy);
+        this.statusbar_health.setPercentage(this.character.health);
+    }
+
+    characterStompEnemy(enemy) {
+        enemy.hit(this.character);
+        this.character.speed_y = 10;
     }
 
     checkThrowObjects() {
