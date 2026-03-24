@@ -209,4 +209,13 @@ class MovableObject extends DrawableObject {
     isDead() {
         return this.health == 0;
     }
+
+    removeEnemy() {
+        if (!this.isRemoved) {
+            this.isRemoved = true;
+            setTimeout(() => {
+                this.world.level.enemies = this.world.level.enemies.filter(enemy => enemy !== this);
+            }, 2000);
+        }
+    }
 }

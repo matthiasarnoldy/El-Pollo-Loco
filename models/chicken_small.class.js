@@ -41,15 +41,10 @@ class Chicken_small extends MovableObject {
                 this.playAnimationOnce(this.IMAGES_DEAD);
                 cancelAnimationFrame(this.animationID);
                 this.damage = 0;
-                if (!this.isRemoved) {
-                    this.isRemoved = true;
-                    setTimeout(() => {
-                        this.world.level.enemies = this.world.level.enemies.filter(enemy => enemy !== this);
-                    }, 2000);
-                }
+                this.removeEnemy();
             } else {
                 this.playAnimation(this.IMAGES_WALKING);
             }
-        }, 1000 / 4)
+        }, 1000 / 4);
     }
 }

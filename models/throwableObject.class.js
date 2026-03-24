@@ -53,7 +53,9 @@ class ThrowableObject extends MovableObject {
         if (this.hasHit || !this.world) return;
         this.world.level.enemies.forEach(enemy => {
             if (enemy.health > 0 && this.isColliding(enemy)) {
-                this.getObjectCenter(enemy);
+                if (!(enemy instanceof Endboss)) {
+                    this.getObjectCenter(enemy);
+                }
                 this.hasHit = true;
                 enemy.hit(this);
                 this.stopGravity();
