@@ -84,12 +84,15 @@ class World {
 
     checkCollisions() {
         this.level.enemies.forEach((enemy) => {
+            if (enemy.health <= 0) return;
             if (this.character.isColliding(enemy)) {
                 const isAboveEnemy = this.character.getLastHitboxBottom() <= enemy.getHitboxTop() + 10;
                 const isFalling = this.character.speed_y <= 0;
                 const isStomp = isAboveEnemy && isFalling;
                 if (isStomp) {
                     // enemy.die();
+                    enemy.hit(this.character);
+                    console.log("Enemy health", enemy.health)
                     this.character.speed_y = 10;
                 } else {
                     this.character.hit(enemy);

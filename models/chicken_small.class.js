@@ -2,6 +2,7 @@ class Chicken_small extends MovableObject {
     height = 48;
     width = 48;
     position_y = 365;
+    health = 20;
     touchDamage = 0.25;
     offset = {
         left: 10,
@@ -33,7 +34,13 @@ class Chicken_small extends MovableObject {
     animate() {
         this.moveLeft();
         setInterval(() => {
-            this.playAnimation(this.IMAGES_WALKING);
+            if (this.health == 0) {
+                this.playAnimationOnce(this.IMAGES_DEAD);
+                cancelAnimationFrame(this.animationID);
+                this.touchDamage = 0;
+            } else {
+                this.playAnimation(this.IMAGES_WALKING);
+            }
         }, 1000 / 4)
     }
 }

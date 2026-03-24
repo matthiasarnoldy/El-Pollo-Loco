@@ -3,9 +3,11 @@ class MovableObject extends DrawableObject {
     speed_y = 0;
     acceleration = 0.625;
     otherDirection = false;
+    health;
     touchDamage = 5;
     lastHit = 0;
     lastPosition_y = 0;
+    animationID;
     onceIndex = 0;
     onceDone = false;
     jumpKeyHandled = false;
@@ -79,7 +81,7 @@ class MovableObject extends DrawableObject {
             this.position_x -= this.speed_x;
         }
         let self = this;
-        requestAnimationFrame(function() {
+        this.animationID = requestAnimationFrame(function() {
             self.moveLeft();
         });
     }
@@ -121,8 +123,8 @@ class MovableObject extends DrawableObject {
                this.getHitboxTop() < mo.getHitboxBottom();
     }
 
-    hit(enemy) {
-        this.health -= enemy.touchDamage;
+    hit(object) {
+        this.health -= object.touchDamage;
         if (this.health < 0) {
             this.health = 0
         } else {
@@ -131,8 +133,10 @@ class MovableObject extends DrawableObject {
     }
 
     isHurt() {
-        let timePassed = new Date().getTime() - this.lastHit;
-        return timePassed < 1000;
+        if (this instanceof Character || this instanceof Endboss) {
+            let timePassed = new Date().getTime() - this.lastHit;
+            return timePassed < 1000;
+        } else return false;
     }
 
     isDead() {
