@@ -23,7 +23,7 @@ class MovableObject extends DrawableObject {
 
     applyGravity() {
         setInterval(() => {
-            this.lastPosition_y =this.position_y;
+            this.lastPosition_y = this.position_y;
             if (this.isAboveGround() || this.speed_y > 0) {
                 this.position_y -= this.speed_y;
                 this.speed_y -= this.acceleration;
@@ -33,6 +33,13 @@ class MovableObject extends DrawableObject {
                 this.speed_y = 0;
             }
         }, 1000 / 60);
+    }
+
+    stopGravity() {
+        this.lastPosition_y = this.position_y;
+        this.speed_x = 0;
+        this.speed_y = 0;
+        this.acceleration = 0;
     }
 
     isAboveGround() {
@@ -109,14 +116,16 @@ class MovableObject extends DrawableObject {
     }
 
     getRandomSpawnX() {
-        const leftRangeLength = 0 - (-720);
-        const rightRangeLength = 5700 - 500;
+        const leftEnd = -300;
+        const rightStart = 300;
+        const leftRangeLength = leftEnd - this.min_x;
+        const rightRangeLength = this.max_x - rightStart;
         const total = leftRangeLength + rightRangeLength;
-        const r = Math.random() * total;
-        if (r < leftRangeLength) {
-            return -720 + r;
+        const randomValue = Math.random() * total;
+        if (randomValue < leftRangeLength) {
+            return this.min_x + randomValue;
         } else {
-            return 500 + (r - leftRangeLength);
+            return rightStart + (randomValue - leftRangeLength);
         }
     }
 
@@ -161,6 +170,17 @@ class MovableObject extends DrawableObject {
 
     getLastHitboxBottom() {
         return this.lastPosition_y + this.height - this.offset.bottom;
+    }
+
+    getObjectCenter(object) {
+        const objectLeft = object.position_x + (object.offset?.left || 0);
+        const objectRight = object.position_x + object.width - (object.offset?.right || 0);
+        const objectTop = object.position_y + (object.offset?.top || 0);
+        const objectBottom = object.position_y + object.height - (object.offset?.bottom || 0);
+        const objectCenterX = (objectLeft + objectRight) / 2;
+        const objectCenterY = (objectTop + objectBottom) / 2;
+        this.position_x = objectCenterX - this.width / 2;
+        this.position_y = objectCenterY - this.height / 2;
     }
 
     isColliding(mo) {
