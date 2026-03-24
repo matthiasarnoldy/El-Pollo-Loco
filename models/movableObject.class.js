@@ -1,16 +1,19 @@
 class MovableObject extends DrawableObject {
     speed_x = 0.1;
     speed_y = 0;
+    min_x = -720;
+    max_x = 5700;
     acceleration = 0.625;
     otherDirection = false;
     health;
-    touchDamage = 5;
+    damage = 5;
     lastHit = 0;
     lastPosition_y = 0;
     animationID;
     onceIndex = 0;
     onceDone = false;
     jumpKeyHandled = false;
+    lastDirectionChange = 0;
     offset = {
         left: 0,
         right: 0,
@@ -73,17 +76,61 @@ class MovableObject extends DrawableObject {
         }
     }
 
-    moveLeft() {
-        if (this.position_x > -720) {
+    movingChicken() {
+        if (this.walkDirection < 0.5) {
             this.position_x -= this.speed_x;
+            this.otherDirection = false;
         } else {
-            this.position_x = Math.random() * 5700;
-            this.position_x -= this.speed_x;
+            this.position_x += this.speed_x;
+            this.otherDirection = true;
         }
+        this.changeDirectionEndOfMap();
+        this.changeDirectionCollision();
         let self = this;
         this.animationID = requestAnimationFrame(function() {
-            self.moveLeft();
+            self.movingChicken();
         });
+    }
+
+    changeDirectionEndOfMap() {
+        if (this.position_x <= this.min_x || this.position_x >= this.max_x) {
+            this.walkDirection = this.walkDirection < 0.5 ? 1 : 0;
+        }
+    }
+
+    changeDirectionCollision() {
+        if (!this.world || !this.world.level?.enemies) return;
+        const enemy = this.world.level.enemies.find(e =>
+            e !== this && e.health > 0 && this.isColliding(e)
+        );
+        if (!enemy) return;
+        if (this.speed_x <= enemy.speed_x) return;
+        this.directionCooldown(enemy);
+    }
+
+    getRandomSpawnX() {
+        const leftRangeLength = 0 - (-720);
+        const rightRangeLength = 5700 - 500;
+        const total = leftRangeLength + rightRangeLength;
+        const r = Math.random() * total;
+        if (r < leftRangeLength) {
+            return -720 + r;
+        } else {
+            return 500 + (r - leftRangeLength);
+        }
+    }
+
+    directionCooldown(enemy) {
+        const now = Date.now();
+        if (now - this.lastDirectionChange < 10000) return;
+        this.walkDirection = this.walkDirection < 0.5 ? 1 : 0;
+        this.lastDirectionChange = now;
+        this.position_x += (this.position_x < enemy.position_x) ? -1 : 1;
+    }
+
+    moveLeft() {
+        this.position_x -= this.speed_x;
+        this.otherDirection = true;
     }
 
     moveRight() {
@@ -124,7 +171,7 @@ class MovableObject extends DrawableObject {
     }
 
     hit(object) {
-        this.health -= object.touchDamage;
+        this.health -= object.damage;
         if (this.health < 0) {
             this.health = 0
         } else {

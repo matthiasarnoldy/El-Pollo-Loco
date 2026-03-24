@@ -3,7 +3,7 @@ class ThrowableObject extends MovableObject {
     position_y = 100;
     speed_x = 0.1;
     speed_y = 0;;
-    touchDamage = 5;
+    damage = 5;
     IMAGES_ROTATING = [
         "assets/img/6_salsa_bottle/bottle_rotation/1_bottle_rotation.png",
         "assets/img/6_salsa_bottle/bottle_rotation/2_bottle_rotation.png",

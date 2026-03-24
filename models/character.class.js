@@ -5,7 +5,7 @@ class Character extends MovableObject {
     position_y = 198;
     speed_x = 4;
     health = 100;
-    touchDamage = 40;
+    damage = 40;
     offset = {
         left: 25,
         right: 35,
@@ -98,7 +98,8 @@ class Character extends MovableObject {
             this.characterMoveRight();
             this.characterMoveLeft();
             this.characterJump();
-            this.world.camera_x = -this.position_x + 180;
+            this.updateCamera();
+            // this.world.camera_x = -this.position_x + 180;
         }, 1000 / 60)
         setInterval(() => {
             this.playAnimations();
@@ -106,15 +107,14 @@ class Character extends MovableObject {
     }
 
     characterMoveRight() {
-        if (this.world.keyboard.RIGHT && this.position_x < this.world.level.level_end_x) {
+        if (this.world.keyboard.RIGHT && this.getHitboxRight() + 10 < this.world.level.level_end_x) {
             this.moveRight();
         }
     }
 
     characterMoveLeft() {
-        if (this.world.keyboard.LEFT && this.position_x > -540) {
-            this.position_x -= this.speed_x;
-            this.otherDirection = true;
+        if (this.world.keyboard.LEFT && this.getHitboxLeft() > -720) {
+            this.moveLeft();
         }
     }
 
@@ -126,5 +126,16 @@ class Character extends MovableObject {
         if (!this.world.keyboard.SPACE) {
             this.jumpKeyHandled = false;
         }
+    }
+
+    updateCamera() {
+        const followOffset = 180;
+        const maxCameraX = 720;
+        const minCameraX = -(this.world.level.level_end_x - this.world.canvas.width);
+
+        const targetCameraX = -this.position_x + followOffset;
+
+        // Kamera clampen -> stoppt am Kartenende
+        this.world.camera_x = Math.max(minCameraX, Math.min(maxCameraX, targetCameraX));
     }
 }

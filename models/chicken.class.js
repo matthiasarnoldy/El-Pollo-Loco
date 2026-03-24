@@ -3,7 +3,7 @@ class Chicken extends MovableObject {
     width = 68;
     position_y = 347;
     health = 40;
-    touchDamage = 0.5;
+    damage = 0.5;
     isRemoved = false;
     offset = {
         left: 10,
@@ -27,19 +27,20 @@ class Chicken extends MovableObject {
         this.loadImages(this.IMAGES_WALKING);
         this.loadImages(this.IMAGES_DEAD);
 
-        this.position_x = 200 + Math.random() * 5700;
+        this.position_x = this.getRandomSpawnX();
         this.speed_x = 0.15 + Math.random() * 0.3;
+        this.walkDirection = Math.random();
 
         this.animate();
     }
 
     animate() {
-        this.moveLeft();
+        this.movingChicken();
         setInterval(() => {
             if (this.health == 0) {
                 this.playAnimationOnce(this.IMAGES_DEAD);
                 cancelAnimationFrame(this.animationID);
-                this.touchDamage = 0;
+                this.damage = 0;
                 if (!this.isRemoved) {
                     this.isRemoved = true;
                     setTimeout(() => {
