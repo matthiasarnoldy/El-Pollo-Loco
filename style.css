@@ -111,6 +111,41 @@ button:active {
     display: none;
 }
 
+.touch-controls {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    z-index: 6;
+    display: none;
+    justify-content: space-between;
+    align-items: flex-end;
+    pointer-events: none;
+}
+
+.touch-group {
+    display: flex;
+    gap: 16px;
+    pointer-events: auto;
+}
+
+.touch-btn {
+    border-radius: 14px;
+    background-color: rgba(0, 0, 0, 0.35);
+    touch-action: none;
+}
+
+.touch-icon {
+    width: 40px;
+    height: 40px;
+    display: block;
+    fill: #FDDF77;
+}
+
+.touch-btn:active {
+    border: 2px solid #FDDF77;
+}
+
 @media (min-width: 1080px) {
     .game-shell {
         width: 75%;
@@ -136,5 +171,11 @@ button:active {
 @media only screen and (max-height: 480px) {
     canvas {
         height: 100vh;
+    }
+}
+
+@media (hover: none) and (pointer: coarse) {
+    .touch-controls {
+        display: flex;
     }
 }

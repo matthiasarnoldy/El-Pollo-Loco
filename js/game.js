@@ -9,6 +9,7 @@ function init() {
     canvas = document.getElementById("canvas");
     world = new World(canvas, keyboard);
     initBannerControls();
+    initTouchControls();
 }
 
 function initBannerControls() {
@@ -30,6 +31,45 @@ function getBannerControls() {
         soundButton: document.getElementById("btnSound"),
         fullscreenButton: document.getElementById("btnFullscreen")
     };
+}
+
+function getTouchControls() {
+    return {
+        leftButton: document.getElementById("btnTouchLeft"),
+        rightButton: document.getElementById("btnTouchRight"),
+        jumpButton: document.getElementById("btnTouchJump"),
+        throwButton: document.getElementById("btnTouchThrow")
+    };
+}
+
+function initTouchControls() {
+    const controls = getTouchControls();
+    bindHoldControl(controls.leftButton, () => keyboard.LEFT = true, () => keyboard.LEFT = false);
+    bindHoldControl(controls.rightButton, () => keyboard.RIGHT = true, () => keyboard.RIGHT = false);
+    bindTapControl(controls.jumpButton, () => keyboard.SPACE = true, () => keyboard.SPACE = false);
+    bindTapControl(controls.throwButton, () => keyboard.THROW = true, () => keyboard.THROW = false);
+}
+
+function bindHoldControl(button, onPress, onRelease) {
+    if (!button) return;
+    button.addEventListener("pointerdown", (event) => {
+        event.preventDefault();
+        onPress();
+    });
+    button.addEventListener("pointerup", onRelease);
+    button.addEventListener("pointercancel", onRelease);
+    button.addEventListener("pointerleave", onRelease);
+}
+
+function bindTapControl(button, onPress, onRelease) {
+    if (!button) return;
+    button.addEventListener("pointerdown", (event) => {
+        event.preventDefault();
+        onPress();
+        setTimeout(onRelease, 120);
+    });
+    button.addEventListener("pointerup", onRelease);
+    button.addEventListener("pointercancel", onRelease);
 }
 
 function isGameOver() {
