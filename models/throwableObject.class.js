@@ -8,6 +8,12 @@ class ThrowableObject extends MovableObject {
     isRemoved = false;
     groundBottom_y = 428;
     rotatingInterval;
+    offset = {
+        left: 10,
+        right: 10,
+        top: 10,
+        bottom: 10
+    };
     IMAGES_ROTATING = [
         "assets/img/6_salsa_bottle/bottle_rotation/1_bottle_rotation.png",
         "assets/img/6_salsa_bottle/bottle_rotation/2_bottle_rotation.png",
@@ -49,13 +55,43 @@ class ThrowableObject extends MovableObject {
         }, 1000 / 60);
     }
 
+    // hitEnemy() {
+    //     if (this.hasHit || !this.world) return;
+    //     this.world.level.enemies.forEach(enemy => {
+    //         if (enemy.health > 0 && this.isColliding(enemy)) {
+    //             if (!(enemy instanceof Endboss)) {
+    //                 this.getObjectCenter(enemy);
+    //             }
+    //             this.hasHit = true;
+    //             enemy.hit(this);
+    //             this.stopGravity();
+    //             this.playSplashAnimation();
+    //             this.removeThrowableObject();
+    //         }
+    //     });
+    // }
+
     hitEnemy() {
         if (this.hasHit || !this.world) return;
+
         this.world.level.enemies.forEach(enemy => {
-            if (enemy.health > 0 && this.isColliding(enemy)) {
+            if (enemy.health <= 0) return;
+
+            let colliding = false;
+
+            if (enemy instanceof Endboss) {
+                // Endboss: 3 Bereiche prüfen
+                colliding = this.isHitboxCollidingEndboss(enemy);
+            } else {
+                // Normale Enemies
+                colliding = this.isColliding(enemy);
+            }
+
+            if (colliding) {
                 if (!(enemy instanceof Endboss)) {
                     this.getObjectCenter(enemy);
                 }
+
                 this.hasHit = true;
                 enemy.hit(this);
                 this.stopGravity();
@@ -63,6 +99,14 @@ class ThrowableObject extends MovableObject {
                 this.removeThrowableObject();
             }
         });
+    }
+
+    isHitboxCollidingEndboss(endboss) {
+        const { head, body, feet } = endboss.getHitboxAreas(); // ← gleiche Werte
+
+        return this.rectanglesOverlap(this, head) ||
+            this.rectanglesOverlap(this, body) ||
+            this.rectanglesOverlap(this, feet);
     }
 
     hitGround() {
