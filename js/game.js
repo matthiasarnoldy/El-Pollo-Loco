@@ -32,8 +32,13 @@ function getBannerControls() {
     };
 }
 
+function isGameOver() {
+    return !!world?.gameOverTriggered;
+}
+
 function bindPauseToggle(controls) {
     controls.pauseToggleButton?.addEventListener("click", (event) => {
+        if (isGameOver()) return;
         event.stopPropagation();
         setPauseActionIcon(isGamePausedUi ? "play" : "pause");
         controls.pauseDropdown?.classList.toggle("d-none");
@@ -42,6 +47,10 @@ function bindPauseToggle(controls) {
 
 function bindPauseAction(controls) {
     controls.pauseActionButton?.addEventListener("click", () => {
+        if (isGameOver()) {
+            controls.pauseDropdown?.classList.add("d-none");
+            return;
+        }
         if (isGamePausedUi) {
             setBannerPlayIcon();
             isGamePausedUi = false;

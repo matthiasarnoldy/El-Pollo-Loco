@@ -1,5 +1,6 @@
 class World {
     character = new Character();
+    endboss = null;
     statusbar_health = new Statusbar();
     throwableObjects = [];
     level = level1;
@@ -10,6 +11,7 @@ class World {
     camera_x = 0;
     intervals = [];
     isPaused = false;
+    gameOverTriggered = false;
 
 
     constructor(canvas, keyboard) {
@@ -25,6 +27,7 @@ class World {
     setWorld() {
         this.character.world = this;
         this.level.enemies.forEach((enemy) => enemy.world = this);
+        this.endboss = this.level.enemies.find((enemy) => enemy instanceof Endboss) || null;
         this.collectObjectIntervals(this.character);
         this.level.enemies.forEach((enemy) => this.collectObjectIntervals(enemy));
     }
@@ -84,6 +87,8 @@ class World {
         this.mainInterval = setInterval(() => {
             if (this.isPaused) return;
             this.checkCollisions();
+            this.checkGameOver();
+            if (this.isPaused) return;
             this.checkThrowObjects();
         }, 1000 / 60);
         this.registerInterval(this.mainInterval);
@@ -136,6 +141,22 @@ class World {
     enemyHitCharacter(enemy) {
         this.character.hit(enemy);
         this.statusbar_health.setPercentage(this.character.health);
+        this.checkGameOver();
+    }
+
+    checkGameOver() {
+        if (this.gameOverTriggered) return;
+        const characterDead = this.character.health <= 0;
+        const endbossDead = this.endboss && this.endboss.health <= 0;
+        if (!characterDead && !endbossDead) return;
+        this.gameOverTriggered = true;
+        setTimeout(() => {
+            this.setPaused(true);
+            this.keyboard.RIGHT = false;
+            this.keyboard.LEFT = false;
+            this.keyboard.SPACE = false;
+            this.keyboard.THROW = false;
+        }, 2000);
     }
 
     characterStompEnemy(enemy) {

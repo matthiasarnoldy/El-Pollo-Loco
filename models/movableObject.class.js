@@ -94,13 +94,17 @@ class MovableObject extends DrawableObject {
                 this.moveRight();
                 this.otherDirection = true;
             }
-            this.changeDirectionEndOfMap();
-            this.changeDirectionCollision();
+            this.changeDirection();
         }
         let self = this;
         this.animationID = requestAnimationFrame(function() {
             self.movingChicken();
         });
+    }
+
+    changeDirection() {
+        this.changeDirectionEndOfMap();
+        this.changeDirectionCollision();
     }
 
     changeDirectionEndOfMap() {
