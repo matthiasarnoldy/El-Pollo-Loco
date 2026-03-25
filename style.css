@@ -1,12 +1,140 @@
-body {
-    height: 100vh;
+@font-face {
+    font-family: 'playwriteMX';
+    src: url("./assets/fonts/playwriteMX.ttf");
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    font-family: "playwriteMX", Arial, Helvetica, sans-serif;
+    background-color: black;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    gap: 40px;
+    background-image: url(./assets/img/5_background/dessert_background.svg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+
+.headline {
+    font-size: 40px;
+}
+
+.game-shell {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 canvas {
+    display: block;
+    aspect-ratio: 720 / 480;
     background-color: black;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+}
+
+.game-banner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 5;
+    background-color: transparent;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 8px;
+}
+
+button {
+    font-size: 20px;
+    padding:  6px;
+    background-color: rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 0;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+button:active {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.pause-menu {
+    position: relative;
+}
+
+.pause-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 0;
+    background: transparent;
+    border-radius: 0;
+    z-index: 8;
+}
+
+.bannerIcon {
+    height: 28px;
+    fill: #FDDF77;
+}
+
+.help-panel {
+    position: fixed;
+    inset: 20% 10%;
+    background: #fff;
+    color: #111;
+    border-radius: 12px;
+    padding: 16px;
+    z-index: 20;
+}
+
+.d-none {
+    display: none;
+}
+
+@media (min-width: 1080px) {
+    .game-shell {
+        width: 75%;
+        max-width: 1920px;
+    }
+
+    canvas {
+        width: 100%;
+        max-width: 1920px;
+    }
+}
+
+@media only screen and (max-width: 720px) {
+    canvas {
+        width: 100%;
+    }
+
+    .headline {
+        display: none;
+    }
+}
+
+@media only screen and (max-height: 480px) {
+    canvas {
+        height: 100vh;
+    }
 }

@@ -94,15 +94,19 @@ class Character extends MovableObject {
     }
 
     animate() {
-        setInterval(() => {
+        this.movementInterval = setInterval(() => {
+            if (this.world?.isPaused) return;
             this.characterMoveRight();
             this.characterMoveLeft();
             this.characterJump();
             this.updateCamera();
-        }, 1000 / 60)
-        setInterval(() => {
+        }, 1000 / 60);
+        this.animationInterval = setInterval(() => {
+            if (this.world?.isPaused) return;
             this.playAnimations();
         }, 1000 / 8);
+        this.world?.registerInterval(this.movementInterval);
+        this.world?.registerInterval(this.animationInterval);
     }
 
     characterMoveRight() {

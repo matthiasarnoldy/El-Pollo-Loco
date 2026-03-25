@@ -8,6 +8,8 @@ class World {
     keyboard;
     throwKeyHandled = false;
     camera_x = 0;
+    intervals = [];
+    isPaused = false;
 
 
     constructor(canvas, keyboard) {
@@ -23,6 +25,8 @@ class World {
     setWorld() {
         this.character.world = this;
         this.level.enemies.forEach((enemy) => enemy.world = this);
+        this.collectObjectIntervals(this.character);
+        this.level.enemies.forEach((enemy) => this.collectObjectIntervals(enemy));
     }
 
     draw() {
@@ -77,10 +81,36 @@ class World {
     }
 
     runInterval() {
-        setInterval(() => {
+        this.mainInterval = setInterval(() => {
+            if (this.isPaused) return;
             this.checkCollisions();
             this.checkThrowObjects();
         }, 1000 / 60);
+        this.registerInterval(this.mainInterval);
+    }
+
+    setPaused(value) {
+        this.isPaused = value;
+    }
+
+    registerInterval(intervalId) {
+        if (!intervalId || this.intervals.includes(intervalId)) return intervalId;
+        this.intervals.push(intervalId);
+        return intervalId;
+    }
+
+    collectObjectIntervals(object) {
+        if (!object) return;
+        const intervalKeys = [
+            "gravityInterval",
+            "movementInterval",
+            "animationInterval",
+            "attackInterval",
+            "throwInterval",
+            "rotatingInterval",
+            "splashInterval"
+        ];
+        intervalKeys.forEach((key) => this.registerInterval(object[key]));
     }
 
     checkCollisions() {
@@ -117,6 +147,7 @@ class World {
         if (this.keyboard.THROW && !this.throwKeyHandled) {
             let bottle = new ThrowableObject(this.character.position_x + 30, this.character.position_y + 100, this.character.otherDirection, this);
             this.throwableObjects.push(bottle);
+            this.collectObjectIntervals(bottle);
             this.throwKeyHandled = true;
         }
         if (!this.keyboard.THROW) {

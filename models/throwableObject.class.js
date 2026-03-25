@@ -47,12 +47,14 @@ class ThrowableObject extends MovableObject {
         this.animate();
         this.speed_y = 15;
         this.applyGravity();
-        setInterval(() => {
+        this.throwInterval = setInterval(() => {
+            if (this.world?.isPaused) return;
             if (this.hasHit) return;
             this.position_x += this.otherDirection ? -8 : 8;
             this.hitEnemy();
             this.hitGround();
         }, 1000 / 60);
+        this.world?.registerInterval(this.throwInterval);
     }
 
     hitEnemy() {
@@ -133,14 +135,18 @@ class ThrowableObject extends MovableObject {
 
     playSplashAnimation() {
         clearInterval(this.rotatingInterval);
-        setInterval(() => {
+        this.splashInterval = setInterval(() => {
+            if (this.world?.isPaused) return;
             this.playAnimationOnce(this.IMAGES_SPLASH);
         }, 1000 / 6);
+        this.world?.registerInterval(this.splashInterval);
     }
 
     animate() {
         this.rotatingInterval = setInterval(() => {
+            if (this.world?.isPaused) return;
             this.playAnimation(this.IMAGES_ROTATING);
         }, 1000 / 12);
+        this.world?.registerInterval(this.rotatingInterval);
     }
 }

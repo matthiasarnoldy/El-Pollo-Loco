@@ -22,7 +22,8 @@ class MovableObject extends DrawableObject {
     };
 
     applyGravity() {
-        setInterval(() => {
+        this.gravityInterval = setInterval(() => {
+            if (this.world?.isPaused) return;
             this.lastPosition_y = this.position_y;
             if (this.isAboveGround() || this.speed_y > 0) {
                 this.position_y -= this.speed_y;
@@ -33,6 +34,7 @@ class MovableObject extends DrawableObject {
                 this.speed_y = 0;
             }
         }, 1000 / 60);
+        this.world?.registerInterval(this.gravityInterval);
     }
 
     stopGravity() {
@@ -84,15 +86,17 @@ class MovableObject extends DrawableObject {
     }
 
     movingChicken() {
-        if (this.walkDirection < 0.5) {
-            this.moveLeft();
-            this.otherDirection = false;
-        } else {
-            this.moveRight();
-            this.otherDirection = true;
+        if (!this.world?.isPaused) {
+            if (this.walkDirection < 0.5) {
+                this.moveLeft();
+                this.otherDirection = false;
+            } else {
+                this.moveRight();
+                this.otherDirection = true;
+            }
+            this.changeDirectionEndOfMap();
+            this.changeDirectionCollision();
         }
-        this.changeDirectionEndOfMap();
-        this.changeDirectionCollision();
         let self = this;
         this.animationID = requestAnimationFrame(function() {
             self.movingChicken();

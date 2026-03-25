@@ -36,7 +36,8 @@ class Chicken_small extends MovableObject {
 
     animate() {
         this.movingChicken();
-        setInterval(() => {
+        this.animationInterval = setInterval(() => {
+            if (this.world?.isPaused) return;
             if (this.health == 0) {
                 this.playAnimationOnce(this.IMAGES_DEAD);
                 cancelAnimationFrame(this.animationID);
@@ -46,5 +47,6 @@ class Chicken_small extends MovableObject {
                 this.playAnimation(this.IMAGES_WALKING);
             }
         }, 1000 / 4);
+        this.world?.registerInterval(this.animationInterval);
     }
 }

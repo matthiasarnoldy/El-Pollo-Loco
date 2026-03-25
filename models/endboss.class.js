@@ -9,6 +9,7 @@ class Endboss extends MovableObject {
     currentAttack = false;
     attackInterval = null;
     attackDamageDealt = false;
+    attackCount = 0;
     health = 180;
     max_health = 180;
     damage = 0.8;
@@ -101,7 +102,8 @@ class Endboss extends MovableObject {
     }
 
     animate() {
-        setInterval(() => {
+        this.animationInterval = setInterval(() => {
+            if (this.world?.isPaused) return;
             if (!this.world?.character) return;
             if (this.health <= 0) {
                 this.handleDeath();
@@ -113,16 +115,19 @@ class Endboss extends MovableObject {
             else if (this.state === "alerting") this.playAlertAnimation();
             else if (this.state === "active") this.isAttacking();
         }, 1000 / 4);
+        this.world?.registerInterval(this.animationInterval);
     }
 
     startAttackCycle() {
         if (this.attackInterval) return;
         this.attackInterval = setInterval(() => {
+            if (this.world?.isPaused) return;
             if (this.state !== "active") return;
             const randomFactor = Math.random() * 5 + 5;
             const delayMs = randomFactor * 1000;
             this.attackDelay(delayMs);
         }, 10000);
+        this.world?.registerInterval(this.attackInterval);
     }
 
     attackDelay(delayMs) {
@@ -145,26 +150,34 @@ class Endboss extends MovableObject {
     playAttackAnimation() {
         this.playAnimationOnce(this.IMAGES_ATTACK);
         if (!this.attackDamageDealt) {
+            this.attackCount++;
             this.dealAttackDamage();
-            this.spawnChickenOnAttack();
+            if (this.attackCount >= 2) {
+                this.spawnChickenOnAttack();
+            }
             this.attackDamageDealt = true;
         }
         if (this.onceDone) {
-            this.onceDone = false;
-            this.onceIndex = 0;
-            this.currentAttack = false;
-            this.attackDamageDealt = false;
+            this.resetCounter();
         }
+    }
+
+    resetCounter() {
+        this.onceDone = false;
+        this.onceIndex = 0;
+        this.currentAttack = false;
+        this.attackDamageDealt = false;
     }
 
     spawnChickenOnAttack() {
         if (!this.world) return;
         const chicken = new Chicken();
-        chicken.position_x = this.position_x;
+        chicken.position_x = this.position_x + (this.otherDirection ? 100 : -100);
         chicken.walkDirection = this.otherDirection ? 1 : 0;
         chicken.speed_x = 3;
         chicken.world = this.world;
         this.world.level.enemies.push(chicken);
+        this.world.collectObjectIntervals(chicken);
     }
 
     isAttacking() {
