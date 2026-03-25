@@ -14,6 +14,8 @@ class MovableObject extends DrawableObject {
     onceDone = false;
     jumpKeyHandled = false;
     lastDirectionChange = 0;
+    idleLongThreshold = 10000;
+    lastActionTime = Date.now();
     offset = {
         left: 0,
         right: 0,
@@ -71,7 +73,23 @@ class MovableObject extends DrawableObject {
         }
     }
 
+    updateLastActionTime() {
+        const keyboard = this.world?.keyboard;
+        const isMoving = !!(keyboard?.RIGHT || keyboard?.LEFT);
+        const isJumping = this.isAboveGround();
+        const isThrowing = !!keyboard?.THROW;
+        if (isMoving || isJumping || isThrowing) {
+            this.lastActionTime = Date.now();
+        }
+    }
+
+    isLongIdle() {
+        if (!this.IMAGES_IDLE_LONG) return false;
+        return Date.now() - this.lastActionTime >= this.idleLongThreshold;
+    }
+
     playAnimations() {
+        this.updateLastActionTime();
         if (this.isDead()) {
             this.playAnimationOnce(this.IMAGES_DEAD);
         } else if (this.isHurt()) {
@@ -80,8 +98,10 @@ class MovableObject extends DrawableObject {
             this.playAnimation(this.IMAGES_JUMPING);
         } else if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
             this.playAnimation(this.IMAGES_WALKING);
+        } else if (this.isLongIdle()) {
+            this.playAnimation(this.IMAGES_IDLE_LONG);
         } else {
-            this.setDefaultImage();
+            this.playAnimation(this.IMAGES_IDLE);
         }
     }
 

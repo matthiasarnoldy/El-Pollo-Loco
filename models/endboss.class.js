@@ -9,6 +9,7 @@ class Endboss extends MovableObject {
     currentAttack = false;
     attackInterval = null;
     attackDamageDealt = false;
+    deathAnimationStarted = false;
     attackCount = 0;
     health = 180;
     max_health = 180;
@@ -243,8 +244,14 @@ class Endboss extends MovableObject {
     }
 
     handleDeath() {
+        if (!this.deathAnimationStarted) {
+            this.deathAnimationStarted = true;
+            this.onceDone = false;
+            this.onceIndex = 0;
+        }
         this.speed_x = 0;
         this.currentAttack = false;
+        this.state = "dead";
         this.playAnimationOnce(this.IMAGES_DEAD);
         if (this.onceDone) {
             this.onceDone = false;
