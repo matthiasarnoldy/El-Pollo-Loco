@@ -2,15 +2,22 @@ class Endboss extends MovableObject {
     height = 350;
     width = 300;
     position_x = 600;
-    // position_x = 6000;
     position_y = 90;
-    health = 100;
+    speed_x = 4;
+    triggerDistance = 400;
+    state = "idle";
+    currentAttack = false;
+    attackInterval = null;
+    attackDamageDealt = false;
+    health = 1000;
+    max_health = 1000;
     damage = 0.8;
-    bodyDimensions = { headH: 65, headW: 85, bodyH: 125, bodyW: 200, bodyL: 20, feetW: 80, feetL: 80 };
+    attackDamage = 15;
+    bodyDimensions = { headH: 65, headW: 65, headL: 20, bodyH: 125, bodyW: 200, bodyL: 20, feetW: 80, feetL: 80 };
     offset = {
         left: 35,
         right: 40,
-        top: 75,
+        top: 80,
         bottom: 10
     };
     IMAGES_WALKING = [
@@ -65,22 +72,172 @@ class Endboss extends MovableObject {
     }
 
     getHitboxAreas() {
-        const { headH, headW, bodyH, bodyW, bodyL, feetW, feetL } = this.bodyDimensions;
+        const { headH, headW, headL, bodyH, bodyW, bodyL, feetW, feetL } = this.bodyDimensions;
         const x = this.getHitboxLeft(), y = this.getHitboxTop();
         const feetH = this.getHitboxBottom() - y - headH - bodyH;
         return {
-            head: { x, y, w: headW, h: headH },
+            head: { x: x + headL, y, w: headW, h: headH },
             body: { x: x + bodyL, y: y + headH, w: bodyW, h: bodyH },
             feet: { x: x + feetL, y: y + headH + bodyH, w: feetW, h: feetH }
         };
     }
 
+    getHitZoneForObject(object) {
+        const { head, body, feet } = this.getHitboxAreas();
+        if (this.overlapsArea(object, head)) return "head";
+        if (this.overlapsArea(object, body)) return "body";
+        if (this.overlapsArea(object, feet)) return "feet";
+        return null;
+    }
+
+    overlapsArea(object, area) {
+        const left = object.position_x + (object.offset?.left || 0);
+        const right = object.position_x + object.width - (object.offset?.right || 0);
+        const top = object.position_y + (object.offset?.top || 0);
+        const bottom = object.position_y + object.height - (object.offset?.bottom || 0);
+
+        return right > area.x &&
+               left < area.x + area.w &&
+               bottom > area.y &&
+               top < area.y + area.h;
+    }
+
     animate() {
         setInterval(() => {
-            if (this.world.character.position_x > 400) {
-            // if (this.world.character.position_x > 5555) {
-                this.playAnimationOnce(this.IMAGES_ALERT);
+            if (!this.world?.character) return;
+            if (this.health <= 0) {
+                this.handleDeath();
+                return;
             }
-        }, 1000 / 4)
+            this.updateState();
+            if (this.state === "active") this.moveTowardsCharacter();
+            if (this.state === "idle") this.img = this.imageCache[this.IMAGES_ALERT[0]];
+            else if (this.state === "alerting") this.playAlertAnimation();
+            else if (this.state === "active") this.isAttacking();
+        }, 1000 / 4);
+    }
+
+    startAttackCycle() {
+        if (this.attackInterval) return;
+        this.attackInterval = setInterval(() => {
+            if (this.state !== "active") return;
+            const randomFactor = Math.random() * 5 + 5;
+            const delayMs = randomFactor * 1000;
+            this.attackDelay();
+        }, 10000);
+    }
+
+    attackDelay(delayMs) {
+        setTimeout(() => {
+            if (this.state === "active") this.currentAttack = true;
+            this.startAttackCycle();
+        }, delayMs);
+    }
+
+    playAlertAnimation() {
+        this.playAnimationOnce(this.IMAGES_ALERT);
+        if (this.onceDone) {
+            this.onceDone = false;
+            this.onceIndex = 0;
+            this.state = "active";
+            this.attackDelay(5000);
+        }
+    }
+
+    playAttackAnimation() {
+        this.playAnimationOnce(this.IMAGES_ATTACK);
+        if (!this.attackDamageDealt) {
+            this.dealAttackDamage();
+            this.spawnChickenOnAttack();
+            this.attackDamageDealt = true;
+        }
+        if (this.onceDone) {
+            this.onceDone = false;
+            this.onceIndex = 0;
+            this.currentAttack = false;
+            this.attackDamageDealt = false;
+        }
+    }
+
+    spawnChickenOnAttack() {
+        if (!this.world) return;
+        const chicken = new Chicken();
+        chicken.position_x = this.position_x;
+        chicken.walkDirection = this.otherDirection ? 1 : 0;
+        chicken.speed_x = 3;
+        chicken.world = this.world;
+        this.world.level.enemies.push(chicken);
+    }
+
+    isAttacking() {
+        if (this.currentAttack) {
+            this.playAttackAnimation();
+        } else if (this.isLowHealth()) {
+            this.playAnimation(this.IMAGES_HURT);
+        } else {
+            this.playAnimation(this.IMAGES_WALKING);
+        }
+    }
+
+    isLowHealth() {
+        return this.health <= this.max_health * 0.2;
+    }
+
+    dealAttackDamage() {
+        setTimeout(() => {
+            if (!this.world?.character || this.onceDone) return;
+            const distance = Math.abs((this.position_x + this.width / 2) - (this.world.character.position_x + this.world.character.width / 2));
+            if (this.isLowHealth()) {
+                this.angryAttackDamage(distance);
+            } else {
+                this.normalAttackDamage(distance);
+            }
+            this.onceDone = false;
+        }, 500);
+    }
+
+    normalAttackDamage(distance) {
+        if (distance <= this.triggerDistance) {
+            const previousDamage = this.damage;
+            this.damage = this.attackDamage;
+            this.world.enemyHitCharacter(this);
+            this.damage = previousDamage;  
+        }
+    }
+
+    angryAttackDamage(distance) {
+        if (distance <= this.triggerDistance * 1.5) {
+            const previousDamage = this.damage;
+            this.damage = this.attackDamage * 1.5;
+            this.world.enemyHitCharacter(this);
+            this.damage = previousDamage;  
+        }
+    }
+
+    updateState() {
+        if (this.state !== "idle") return;
+        const distance = Math.abs(this.position_x - this.world.character.position_x);
+        if (distance <= this.triggerDistance) this.state = "alerting";
+    }
+
+    moveTowardsCharacter() {
+        const characterX = this.world.character.position_x;
+        if (characterX < this.position_x) {
+            this.moveLeft();
+            this.otherDirection = false;
+        } else if (characterX > this.position_x) {
+            this.moveRight();
+            this.otherDirection = true;
+        }
+    }
+
+    handleDeath() {
+        this.speed_x = 0;
+        this.currentAttack = false;
+        this.playAnimationOnce(this.IMAGES_DEAD);
+        if (this.onceDone) {
+            this.onceDone = false;
+            this.removeEnemy();
+        }
     }
 }

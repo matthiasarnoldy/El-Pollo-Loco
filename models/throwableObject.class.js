@@ -55,58 +55,59 @@ class ThrowableObject extends MovableObject {
         }, 1000 / 60);
     }
 
-    // hitEnemy() {
-    //     if (this.hasHit || !this.world) return;
-    //     this.world.level.enemies.forEach(enemy => {
-    //         if (enemy.health > 0 && this.isColliding(enemy)) {
-    //             if (!(enemy instanceof Endboss)) {
-    //                 this.getObjectCenter(enemy);
-    //             }
-    //             this.hasHit = true;
-    //             enemy.hit(this);
-    //             this.stopGravity();
-    //             this.playSplashAnimation();
-    //             this.removeThrowableObject();
-    //         }
-    //     });
-    // }
-
     hitEnemy() {
         if (this.hasHit || !this.world) return;
-
-        this.world.level.enemies.forEach(enemy => {
-            if (enemy.health <= 0) return;
-
-            let colliding = false;
-
-            if (enemy instanceof Endboss) {
-                // Endboss: 3 Bereiche prüfen
-                colliding = this.isHitboxCollidingEndboss(enemy);
-            } else {
-                // Normale Enemies
-                colliding = this.isColliding(enemy);
-            }
-
-            if (colliding) {
-                if (!(enemy instanceof Endboss)) {
-                    this.getObjectCenter(enemy);
-                }
-
-                this.hasHit = true;
-                enemy.hit(this);
-                this.stopGravity();
-                this.playSplashAnimation();
-                this.removeThrowableObject();
-            }
-        });
+        const enemy = this.findCollidingEnemy();
+        if (!enemy) return;
+        const zone = this.getHitZone(enemy);
+        this.alignBottleOnHit(enemy);
+        this.applyDamageToEnemy(enemy, zone);
+        this.finishHit();
     }
 
-    isHitboxCollidingEndboss(endboss) {
-        const { head, body, feet } = endboss.getHitboxAreas(); // ← gleiche Werte
+    findCollidingEnemy() {
+        return this.world.level.enemies.find(enemy =>
+            enemy.health > 0 && this.isEnemyColliding(enemy)
+        );
+    }
 
-        return this.rectanglesOverlap(this, head) ||
-            this.rectanglesOverlap(this, body) ||
-            this.rectanglesOverlap(this, feet);
+    isEnemyColliding(enemy) {
+        if (enemy instanceof Endboss) {
+            return !!enemy.getHitZoneForObject(this);
+        }
+        return this.isColliding(enemy);
+    }
+
+    getHitZone(enemy) {
+        return enemy instanceof Endboss ? enemy.getHitZoneForObject(this) : null;
+    }
+
+    alignBottleOnHit(enemy) {
+        if (!(enemy instanceof Endboss)) this.getObjectCenter(enemy);
+    }
+
+    applyDamageToEnemy(enemy, zone) {
+        const baseDamage = this.damage;
+        if (zone) this.damage = this.getDamageByZone(zone);
+        enemy.hit(this);
+        console.log(enemy.health);
+        this.damage = baseDamage;
+    }
+
+    finishHit() {
+        this.hasHit = true;
+        this.stopGravity();
+        this.playSplashAnimation();
+        this.removeThrowableObject();
+    }
+
+    getDamageByZone(zone) {
+        const multipliers = {
+            head: 2.0,
+            body: 1.0,
+            feet: 0.5
+        };
+        return Math.round(this.damage * (multipliers[zone] ?? 1));
     }
 
     hitGround() {

@@ -28,13 +28,13 @@ class Statusbar extends DrawableObject {
     resolveImageIndex(percentage) {
         if (percentage == 100) {
             return 5;
-        } else if (percentage > 80) {
+        } else if (percentage > 79) {
             return 4;
-        } else if (percentage > 60) {
+        } else if (percentage > 59) {
             return 3;
-        } else if (percentage > 40) {
+        } else if (percentage > 39) {
             return 2;
-        } else if (percentage > 20) {
+        } else if (percentage > 19) {
             return 1;
         } else {
             return 0;

@@ -59,7 +59,7 @@ class MovableObject extends DrawableObject {
 
     playAnimationOnce(images) {
         if (this.onceDone) return;
-
+        
         this.img = this.imageCache[images[this.onceIndex]];
 
         if (this.onceIndex < images.length - 1) {
@@ -85,10 +85,10 @@ class MovableObject extends DrawableObject {
 
     movingChicken() {
         if (this.walkDirection < 0.5) {
-            this.position_x -= this.speed_x;
+            this.moveLeft();
             this.otherDirection = false;
         } else {
-            this.position_x += this.speed_x;
+            this.moveRight();
             this.otherDirection = true;
         }
         this.changeDirectionEndOfMap();
