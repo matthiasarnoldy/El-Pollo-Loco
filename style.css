@@ -28,6 +28,72 @@ html, body {
     font-size: 40px;
 }
 
+.rotate-device-message {
+    max-width: 320px;
+    padding: 24px;
+    display: none;
+    color: #111;
+    text-align: center;
+}
+
+.rotate-device-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.rotate-device-text {
+    text-align: center;
+}
+
+.rotate-device-text h2 {
+    margin-bottom: 6px;
+}
+
+.rotate-phone-icon {
+    width: 50px;
+    height: 90px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.7);
+    box-shadow: 0 0 12px rgba(253, 223, 119, 0.45);
+    position: relative;
+    transform-origin: center center;
+    animation: rotate-device 1.6s ease-in-out infinite;
+}
+
+.rotate-phone-icon::before {
+    content: "";
+    position: absolute;
+    top: 7px;
+    left: 5px;
+    right: 5px;
+    bottom: 13px;
+    border-radius: 4px;
+    background: rgba(253, 223, 119, 0.2);
+}
+
+.rotate-phone-icon::after {
+    content: "";
+    width: 8px;
+    height: 3px;
+    background: #FDDF77;
+    border-radius: 2px;
+    position: absolute;
+    left: 50%;
+    bottom: 4px;
+    transform: translateX(-50%);
+}
+
+@keyframes rotate-device {
+    0% { transform: rotate(0deg); }
+    35% { transform: rotate(0deg); }
+    65% { transform: rotate(-90deg); }
+    100% { transform: rotate(-90deg); }
+}
+
 .game-shell {
     position: relative;
     display: flex;
@@ -177,5 +243,19 @@ button:active {
 @media (hover: none) and (pointer: coarse) {
     .touch-controls {
         display: flex;
+    }
+}
+
+@media (hover: none) and (pointer: coarse) and (orientation: portrait) {
+    .game-shell {
+        display: none;
+    }
+
+    .headline {
+        display: block;
+    }
+
+    .rotate-device-message {
+        display: block;
     }
 }
