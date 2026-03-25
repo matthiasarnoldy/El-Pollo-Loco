@@ -1,7 +1,7 @@
 class Endboss extends MovableObject {
     height = 350;
     width = 300;
-    position_x = 600;
+    position_x = 6000;
     position_y = 90;
     speed_x = 4;
     triggerDistance = 400;
@@ -9,8 +9,8 @@ class Endboss extends MovableObject {
     currentAttack = false;
     attackInterval = null;
     attackDamageDealt = false;
-    health = 1000;
-    max_health = 1000;
+    health = 180;
+    max_health = 180;
     damage = 0.8;
     attackDamage = 15;
     bodyDimensions = { headH: 65, headW: 65, headL: 20, bodyH: 125, bodyW: 200, bodyL: 20, feetW: 80, feetL: 80 };
@@ -67,7 +67,6 @@ class Endboss extends MovableObject {
         this.loadImages(this.IMAGES_ATTACK);
         this.loadImages(this.IMAGES_HURT);
         this.loadImages(this.IMAGES_DEAD);
-
         this.animate();
     }
 
@@ -95,7 +94,6 @@ class Endboss extends MovableObject {
         const right = object.position_x + object.width - (object.offset?.right || 0);
         const top = object.position_y + (object.offset?.top || 0);
         const bottom = object.position_y + object.height - (object.offset?.bottom || 0);
-
         return right > area.x &&
                left < area.x + area.w &&
                bottom > area.y &&
@@ -123,7 +121,7 @@ class Endboss extends MovableObject {
             if (this.state !== "active") return;
             const randomFactor = Math.random() * 5 + 5;
             const delayMs = randomFactor * 1000;
-            this.attackDelay();
+            this.attackDelay(delayMs);
         }, 10000);
     }
 

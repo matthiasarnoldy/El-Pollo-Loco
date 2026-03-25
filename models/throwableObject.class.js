@@ -90,7 +90,6 @@ class ThrowableObject extends MovableObject {
         const baseDamage = this.damage;
         if (zone) this.damage = this.getDamageByZone(zone);
         enemy.hit(this);
-        console.log(enemy.health);
         this.damage = baseDamage;
     }
 
@@ -103,7 +102,7 @@ class ThrowableObject extends MovableObject {
 
     getDamageByZone(zone) {
         const multipliers = {
-            head: 2.0,
+            head: 1.5,
             body: 1.0,
             feet: 0.5
         };
