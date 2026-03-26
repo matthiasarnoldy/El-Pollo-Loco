@@ -2,6 +2,7 @@ class World {
     character = new Character();
     endboss = null;
     statusbar_health = new Statusbar();
+    collectibleBottles = [];
     throwableObjects = [];
     level = level1;
     canvas;
@@ -28,6 +29,8 @@ class World {
         this.character.world = this;
         this.level.enemies.forEach((enemy) => enemy.world = this);
         this.endboss = this.level.enemies.find((enemy) => enemy instanceof Endboss) || null;
+        this.collectibleBottles = this.level.collectibleBottles || [];
+        this.collectibleBottles.forEach((bottle) => bottle.world = this);
         this.collectObjectIntervals(this.character);
         this.level.enemies.forEach((enemy) => this.collectObjectIntervals(enemy));
     }
@@ -44,6 +47,7 @@ class World {
         this.ctx.translate(this.camera_x, 0);
 
         this.addToMap(this.character);
+        this.addObjectsToMap(this.collectibleBottles);
         this.addObjectsToMap(this.level.enemies);
         this.addObjectsToMap(this.throwableObjects);
         this.ctx.translate(-this.camera_x, 0);
@@ -87,11 +91,19 @@ class World {
         this.mainInterval = setInterval(() => {
             if (this.isPaused) return;
             this.checkCollisions();
+            this.checkCollectibleBottles();
             this.checkGameOver();
             if (this.isPaused) return;
             this.checkThrowObjects();
         }, 1000 / 60);
         this.registerInterval(this.mainInterval);
+    }
+
+    checkCollectibleBottles() {
+        this.collectibleBottles = this.collectibleBottles.filter((bottle) => {
+            if (!this.character.isColliding(bottle)) return true;
+            return false;
+        });
     }
 
     setPaused(value) {

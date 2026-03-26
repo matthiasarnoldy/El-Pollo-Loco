@@ -2,12 +2,14 @@ class Level {
     enemies;
     clouds;
     backgroundObjects;
+    collectibleBottles;
     level_end_x = 720 * 9;
 
-    constructor(enemies, clouds, backgroundObjects) {
+    constructor(enemies, clouds, backgroundObjects, collectibleBottles = []) {
         this.enemies = enemies;
         this.clouds = clouds;
         this.backgroundObjects = backgroundObjects;
+        this.collectibleBottles = collectibleBottles;
     }
 
 
@@ -24,5 +26,29 @@ class Level {
             );
         }
         return backgrounds;
+    }
+
+    static createCollectibleBottles(amount) {
+        const bottles = [];
+        const spawnRange = this.getCollectibleBottleSpawnRange();
+        for (let index = 0; index < amount; index++) {
+            const randomValue = Math.random() * spawnRange.totalRangeLength;
+            const randomX = randomValue < spawnRange.leftRangeLength
+                ? spawnRange.minX + randomValue
+                : spawnRange.rightStart + (randomValue - spawnRange.leftRangeLength);
+            bottles.push(new CollectibleBottle(randomX));
+        }
+        return bottles;
+    }
+
+    static getCollectibleBottleSpawnRange() {
+        const minX = -700;
+        const leftEnd = -300;
+        const rightStart = 300;
+        const maxX = 720 * 9 - 300;
+        const leftRangeLength = leftEnd - minX;
+        const rightRangeLength = maxX - rightStart;
+        const totalRangeLength = leftRangeLength + rightRangeLength;
+        return { minX, rightStart, leftRangeLength, totalRangeLength };
     }
 }
