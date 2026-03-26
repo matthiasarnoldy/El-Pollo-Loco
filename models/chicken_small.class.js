@@ -5,6 +5,7 @@ class Chicken_small extends MovableObject {
     health = 20;
     damage = 0.25;
     isRemoved = false;
+    bottleDropChecked = false;
     offset = {
         left: 10,
         right: 10,
@@ -48,5 +49,22 @@ class Chicken_small extends MovableObject {
             }
         }, 1000 / 4);
         this.world?.registerInterval(this.animationInterval);
+    }
+
+    removeEnemy() {
+        if (!this.bottleDropChecked) {
+            this.bottleDropChecked = true;
+            this.trySpawnBottleDrop();
+        }
+        super.removeEnemy();
+    }
+
+    trySpawnBottleDrop() {
+        if (!this.world) return;
+        const randomNumber = Math.random();
+        if (randomNumber < 0.7 || randomNumber > 0.8) return;
+        const bottle = new CollectibleBottle(this.position_x);
+        bottle.world = this.world;
+        this.world.collectibleBottles.push(bottle);
     }
 }

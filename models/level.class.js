@@ -45,7 +45,7 @@ class Level {
         const minX = -700;
         const leftEnd = -300;
         const rightStart = 300;
-        const maxX = 720 * 9 - 300;
+        const maxX = 720 * 9 - 720;
         const leftRangeLength = leftEnd - minX;
         const rightRangeLength = maxX - rightStart;
         const totalRangeLength = leftRangeLength + rightRangeLength;

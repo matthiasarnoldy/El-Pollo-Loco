@@ -1,43 +1,42 @@
 class Statusbar extends DrawableObject {
-    percentage = 100;
-    IMAGES = [
-        "assets/img/7_statusbars/1_statusbar/2_statusbar_health/blue/0.png",
-        "assets/img/7_statusbars/1_statusbar/2_statusbar_health/blue/20.png",
-        "assets/img/7_statusbars/1_statusbar/2_statusbar_health/blue/40.png",
-        "assets/img/7_statusbars/1_statusbar/2_statusbar_health/blue/60.png",
-        "assets/img/7_statusbars/1_statusbar/2_statusbar_health/blue/80.png",
-        "assets/img/7_statusbars/1_statusbar/2_statusbar_health/blue/100.png",
-    ];
+    displayValue = 100;
+    IMAGES = {
+        health: "assets/img/7_statusbars/3_icons/icon_health.png",
+        coin: "assets/img/7_statusbars/3_icons/icon_coin.png",
+        bottle: "assets/img/7_statusbars/3_icons/icon_salsa_bottle.png",
+        endboss: "assets/img/7_statusbars/3_icons/icon_health_endboss.png"
+    };
 
-    constructor() {
-        super().loadImage(this.IMAGES[0]);
-        this.loadImages(this.IMAGES);
-        this.position_x = 16;
-        this.position_y = 0;
-        this.height = 54;
-        this.width = 200;
+    constructor(type = "health", x = 16, y = 0) {
+        super();
+        const iconPath = this.IMAGES[type] || this.IMAGES.health;
+        this.loadImage(iconPath);
+        this.position_x = x;
+        this.position_y = y + 4;
+        this.height = 64;
+        this.width = 64;
         this.setPercentage(100);
     }
 
-    setPercentage(percentage) {
-        this.percentage = percentage;
-        let path = this.IMAGES[this.resolveImageIndex(percentage)];
-        this.img = this.imageCache[path];
+    draw(ctx) {
+        super.draw(ctx);
+        const valueText = `${Math.max(0, Math.round(this.displayValue))}`;
+        const textYOffset = 10;
+        ctx.font = "28px playwriteMX, Arial, sans-serif";
+        ctx.fillStyle = "#FDDF77";
+        ctx.textAlign = "left";
+        ctx.textBaseline = "middle";
+        ctx.fillText(valueText, this.position_x + this.width, this.position_y + this.height / 2 + textYOffset);
     }
 
-    resolveImageIndex(percentage) {
-        if (percentage == 100) {
-            return 5;
-        } else if (percentage > 79) {
-            return 4;
-        } else if (percentage > 59) {
-            return 3;
-        } else if (percentage > 39) {
-            return 2;
-        } else if (percentage > 19) {
-            return 1;
-        } else {
-            return 0;
-        }
+    setByValue(value, maxValue) {
+        const safeMax = Math.max(1, maxValue);
+        const normalized = Math.max(0, Math.min(100, Math.round((value / safeMax) * 100)));
+        this.setPercentage(normalized);
+        this.displayValue = value;
+    }
+
+    setPercentage(percentage) {
+        this.displayValue = percentage;
     }
 }

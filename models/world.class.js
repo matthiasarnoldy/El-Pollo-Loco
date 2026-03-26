@@ -1,9 +1,14 @@
 class World {
     character = new Character();
     endboss = null;
-    statusbar_health = new Statusbar();
+    statusbar_health = new Statusbar("health", 16, 0);
+    statusbar_coin = new Statusbar("coin", 160, 0);
+    statusbar_bottle = new Statusbar("bottle", 264, 0);
+    statusbar_endboss = new Statusbar("endboss", 16, 64);
+    coinCount = 0;
     collectibleBottles = [];
     throwableObjects = [];
+    throwableBottleCount = 1;
     level = level1;
     canvas;
     ctx;
@@ -31,6 +36,7 @@ class World {
         this.endboss = this.level.enemies.find((enemy) => enemy instanceof Endboss) || null;
         this.collectibleBottles = this.level.collectibleBottles || [];
         this.collectibleBottles.forEach((bottle) => bottle.world = this);
+        this.updateStatusbars();
         this.collectObjectIntervals(this.character);
         this.level.enemies.forEach((enemy) => this.collectObjectIntervals(enemy));
     }
@@ -44,6 +50,11 @@ class World {
 
         this.ctx.translate(-this.camera_x, 0);
         this.addToMap(this.statusbar_health);
+        if (this.isEndbossAwake()) {
+            this.addToMap(this.statusbar_endboss);
+        }
+        this.addToMap(this.statusbar_coin);
+        this.addToMap(this.statusbar_bottle);
         this.ctx.translate(this.camera_x, 0);
 
         this.addToMap(this.character);
@@ -92,6 +103,7 @@ class World {
             if (this.isPaused) return;
             this.checkCollisions();
             this.checkCollectibleBottles();
+            this.updateStatusbars();
             this.checkGameOver();
             if (this.isPaused) return;
             this.checkThrowObjects();
@@ -99,9 +111,24 @@ class World {
         this.registerInterval(this.mainInterval);
     }
 
+    updateStatusbars() {
+        this.statusbar_health.setPercentage(this.character.health);
+        this.statusbar_coin.setByValue(this.coinCount, 5);
+        this.statusbar_bottle.setByValue(this.throwableBottleCount, 5);
+        if (this.endboss) {
+            this.statusbar_endboss.setByValue(this.endboss.health, this.endboss.max_health || 180);
+        }
+    }
+
+    isEndbossAwake() {
+        return !!this.endboss && this.endboss.state !== "idle";
+    }
+
     checkCollectibleBottles() {
         this.collectibleBottles = this.collectibleBottles.filter((bottle) => {
             if (!this.character.isColliding(bottle)) return true;
+            this.throwableBottleCount++;
+            this.updateStatusbars();
             return false;
         });
     }
@@ -152,7 +179,7 @@ class World {
 
     enemyHitCharacter(enemy) {
         this.character.hit(enemy);
-        this.statusbar_health.setPercentage(this.character.health);
+        this.updateStatusbars();
         this.checkGameOver();
     }
 
@@ -162,13 +189,17 @@ class World {
         const endbossDead = this.endboss && this.endboss.health <= 0;
         if (!characterDead && !endbossDead) return;
         this.gameOverTriggered = true;
+        this.stopInput();
         setTimeout(() => {
             this.setPaused(true);
-            this.keyboard.RIGHT = false;
-            this.keyboard.LEFT = false;
-            this.keyboard.SPACE = false;
-            this.keyboard.THROW = false;
         }, 2000);
+    }
+
+    stopInput() {
+        this.keyboard.RIGHT = false;
+        this.keyboard.LEFT = false;
+        this.keyboard.SPACE = false;
+        this.keyboard.THROW = false;
     }
 
     characterStompEnemy(enemy) {
@@ -177,10 +208,12 @@ class World {
     }
 
     checkThrowObjects() {
-        if (this.keyboard.THROW && !this.throwKeyHandled) {
+        if (this.keyboard.THROW && !this.throwKeyHandled && this.throwableBottleCount > 0) {
             let bottle = new ThrowableObject(this.character.position_x + 30, this.character.position_y + 100, this.character.otherDirection, this);
             this.throwableObjects.push(bottle);
             this.collectObjectIntervals(bottle);
+            this.throwableBottleCount--;
+            this.updateStatusbars();
             this.throwKeyHandled = true;
         }
         if (!this.keyboard.THROW) {
