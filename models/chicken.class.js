@@ -5,6 +5,7 @@ class Chicken extends MovableObject {
     health = 40;
     damage = 0.5;
     isRemoved = false;
+    coinDropChecked = false;
     offset = {
         left: 10,
         right: 10,
@@ -48,5 +49,27 @@ class Chicken extends MovableObject {
             }
         }, 1000 / 4);
         this.world?.registerInterval(this.animationInterval);
+    }
+
+    removeEnemy() {
+        if (!this.coinDropChecked) {
+            this.coinDropChecked = true;
+            this.trySpawnCoinDrop();
+        }
+        super.removeEnemy();
+    }
+
+    trySpawnCoinDrop() {
+        if (!this.world) return;
+        const randomNumber = Math.random();
+        if (randomNumber < 0.2 || randomNumber > 0.4) return;
+        const spawnX = this.position_x;
+        const world = this.world;
+        setTimeout(() => {
+            if (!world) return;
+            const coin = new CollectibleCoin(spawnX, 280);
+            coin.world = world;
+            world.collectibleCoins.push(coin);
+        }, 200);
     }
 }

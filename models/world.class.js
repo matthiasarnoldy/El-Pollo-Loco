@@ -6,6 +6,7 @@ class World {
     statusbar_bottle = new Statusbar("bottle", 264, 0);
     statusbar_endboss = new Statusbar("endboss", 16, 64);
     coinCount = 0;
+    collectibleCoins = [];
     collectibleBottles = [];
     throwableObjects = [];
     throwableBottleCount = 1;
@@ -34,6 +35,8 @@ class World {
         this.character.world = this;
         this.level.enemies.forEach((enemy) => enemy.world = this);
         this.endboss = this.level.enemies.find((enemy) => enemy instanceof Endboss) || null;
+        this.collectibleCoins = this.level.collectibleCoins || [];
+        this.collectibleCoins.forEach((coin) => coin.world = this);
         this.collectibleBottles = this.level.collectibleBottles || [];
         this.collectibleBottles.forEach((bottle) => bottle.world = this);
         this.updateStatusbars();
@@ -58,6 +61,7 @@ class World {
         this.ctx.translate(this.camera_x, 0);
 
         this.addToMap(this.character);
+        this.addObjectsToMap(this.collectibleCoins);
         this.addObjectsToMap(this.collectibleBottles);
         this.addObjectsToMap(this.level.enemies);
         this.addObjectsToMap(this.throwableObjects);
@@ -102,6 +106,7 @@ class World {
         this.mainInterval = setInterval(() => {
             if (this.isPaused) return;
             this.checkCollisions();
+            this.checkCollectibleCoins();
             this.checkCollectibleBottles();
             this.updateStatusbars();
             this.checkGameOver();
@@ -122,6 +127,15 @@ class World {
 
     isEndbossAwake() {
         return !!this.endboss && this.endboss.state !== "idle";
+    }
+
+    checkCollectibleCoins() {
+        this.collectibleCoins = this.collectibleCoins.filter((coin) => {
+            if (!this.character.isColliding(coin)) return true;
+            this.coinCount++;
+            this.updateStatusbars();
+            return false;
+        });
     }
 
     checkCollectibleBottles() {
