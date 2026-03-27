@@ -18,7 +18,7 @@ html, body {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    background-image: url(./assets/img/5_background/dessert_background.svg);
+    background-image: url(./assets/img/5_background/background\ desert.jpg);
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
@@ -175,6 +175,92 @@ button:active {
 
 .d-none {
     display: none;
+}
+
+.start-screen,
+.endscreen-actions {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    z-index: 10;
+}
+
+.start-screen {
+    top: 0;
+    left: 0;
+    width: 100%;
+    aspect-ratio: 720 / 480;
+    height: auto;
+    overflow: hidden;
+    justify-content: flex-start;
+    padding: 20px;
+}
+
+.endscreen-actions {
+    inset: 0;
+    justify-content: flex-end;
+    align-items: center;
+    flex-direction: column;
+    padding: 0 24px 28px;
+    gap: 16px;
+}
+
+.start-screen.d-none,
+.endscreen-actions.d-none {
+    display: none;
+}
+
+.start-screen-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+}
+
+.start-screen-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(120px, 180px));
+    justify-content: center;
+    gap: 16px;
+    align-items: center;
+}
+
+.start-screen-btn,
+.overlay-action-btn {
+    font-family: "playwriteMX", Arial, sans-serif;
+    font-size: clamp(14px, 2.2vw, 20px);
+    padding: 8px 16px;
+    background-color: rgba(0, 0, 0, 0.55);
+    color: #FDDF77;
+    border: 2px solid #FDDF77;
+    border-radius: 12px;
+    cursor: pointer;
+    letter-spacing: 0.03em;
+    transition: background-color 0.15s;
+}
+
+.start-screen-btn-left {
+    justify-self: stretch;
+}
+
+.start-screen-btn-center {
+    justify-self: stretch;
+}
+
+.start-screen-btn-right {
+    justify-self: stretch;
+}
+
+.start-screen-btn {
+    width: 100%;
+}
+
+.start-screen-btn:hover,
+.overlay-action-btn:hover {
+    background-color: rgba(0, 0, 0, 0.75);
 }
 
 .touch-controls {

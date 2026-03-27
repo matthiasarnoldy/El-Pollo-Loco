@@ -22,12 +22,13 @@
     <script src="./models/level.class.js"></script>
     <script src="./levels/level1.js"></script>
     <script src="./js/template.js"></script>
+    <script src="./js/preload.js"></script>
     <script src="./js/game.js"></script>
 
     <link rel="stylesheet" href="style.css">
 
 </head>
-<body onload="init()">
+<body onload="preloadAssets(); showStartScreen();">
 
     <h1 class="headline">El Pollo Loco</h1>
     <div class="rotate-device-message">
@@ -76,6 +77,18 @@
             </button>
         </div>
         <canvas id="canvas" width="720" height="480"></canvas>
+        <div id="startScreen" class="start-screen d-none">
+            <img src="assets/img/9_intro_outro_screens/start/startscreen_1.png" alt="Start" class="start-screen-img">
+            <div class="start-screen-actions">
+                <button class="start-screen-btn start-screen-btn-left" type="button">Legal Notice</button>
+                <button class="start-screen-btn start-screen-btn-center" type="button">Tutorials</button>
+                <button id="btnStartGame" class="start-screen-btn start-screen-btn-right" type="button" onclick="startGame()">Play</button>
+            </div>
+        </div>
+        <div id="gameOverActions" class="endscreen-actions d-none">
+            <button class="overlay-action-btn" onclick="restartGame()">Neu starten</button>
+            <button class="overlay-action-btn" onclick="goToStartScreen()">Zum Startbildschirm</button>
+        </div>
         <div class="touch-controls">
             <div class="touch-group touch-group-left">
                 <button id="btnTouchLeft" class="touch-btn" aria-label="Nach links">

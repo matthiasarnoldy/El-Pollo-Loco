@@ -4,6 +4,51 @@ let keyboard = new Keyboard();
 let isGamePausedUi = false;
 let isSoundMutedUi = false;
 let isFullscreenUi = false;
+let areBannerControlsInitialized = false;
+let areTouchControlsInitialized = false;
+
+function showStartScreen() {
+    const screen = document.getElementById("startScreen");
+    screen?.classList.remove("d-none");
+}
+
+function hideStartScreen() {
+    const screen = document.getElementById("startScreen");
+    screen?.classList.add("d-none");
+}
+
+function startGame() {
+    cleanupWorld();
+    resetUiForGameStart();
+    hideStartScreen();
+    hideGameOverActions();
+    init();
+}
+
+function restartGame() {
+    cleanupWorld();
+    resetUiForGameStart();
+    hideStartScreen();
+    hideGameOverActions();
+    init();
+}
+
+function goToStartScreen() {
+    cleanupWorld();
+    resetUiForStartScreen();
+    hideGameOverActions();
+    showStartScreen();
+}
+
+function showGameOverActions() {
+    const actions = document.getElementById("gameOverActions");
+    actions?.classList.remove("d-none");
+}
+
+function hideGameOverActions() {
+    const actions = document.getElementById("gameOverActions");
+    actions?.classList.add("d-none");
+}
 
 function init() {
     canvas = document.getElementById("canvas");
@@ -12,7 +57,36 @@ function init() {
     initTouchControls();
 }
 
+function cleanupWorld() {
+    if (!world) return;
+    world.destroy?.();
+    world = null;
+}
+
+function resetUiForGameStart() {
+    keyboard.RIGHT = false;
+    keyboard.LEFT = false;
+    keyboard.SPACE = false;
+    keyboard.THROW = false;
+    isGamePausedUi = false;
+    setBannerPlayIcon();
+    setPauseActionIcon("pause");
+}
+
+function resetUiForStartScreen() {
+    keyboard.RIGHT = false;
+    keyboard.LEFT = false;
+    keyboard.SPACE = false;
+    keyboard.THROW = false;
+    isGamePausedUi = false;
+    setBannerPlayIcon();
+    setPauseActionIcon("pause");
+    const pauseDropdown = document.getElementById("pauseDropdown");
+    pauseDropdown?.classList.add("d-none");
+}
+
 function initBannerControls() {
+    if (areBannerControlsInitialized) return;
     const controls = getBannerControls();
     bindPauseToggle(controls);
     bindPauseAction(controls);
@@ -20,6 +94,7 @@ function initBannerControls() {
     bindSoundAction(controls);
     bindFullscreenAction(controls);
     bindDropdownClose(controls);
+    areBannerControlsInitialized = true;
 }
 
 function getBannerControls() {
@@ -43,11 +118,13 @@ function getTouchControls() {
 }
 
 function initTouchControls() {
+    if (areTouchControlsInitialized) return;
     const controls = getTouchControls();
     bindHoldControl(controls.leftButton, () => keyboard.LEFT = true, () => keyboard.LEFT = false);
     bindHoldControl(controls.rightButton, () => keyboard.RIGHT = true, () => keyboard.RIGHT = false);
     bindTapControl(controls.jumpButton, () => keyboard.SPACE = true, () => keyboard.SPACE = false);
     bindTapControl(controls.throwButton, () => keyboard.THROW = true, () => keyboard.THROW = false);
+    areTouchControlsInitialized = true;
 }
 
 function bindHoldControl(button, onPress, onRelease) {
@@ -106,7 +183,7 @@ function bindPauseAction(controls) {
 
 function bindExitAction(controls) {
     controls.exitActionButton?.addEventListener("click", () => {
-        window.location.reload();
+        goToStartScreen();
     });
 }
 

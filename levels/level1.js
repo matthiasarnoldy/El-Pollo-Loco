@@ -1,4 +1,5 @@
-const level1 = new Level(
+function createLevel1() {
+return new Level(
     [
         new Chicken(),
         new Chicken(),
@@ -25,3 +26,4 @@ const level1 = new Level(
     Level.createCollectibleBottles(4),
     Level.createCollectibleCoins()
 );
+}

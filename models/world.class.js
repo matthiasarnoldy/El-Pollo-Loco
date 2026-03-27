@@ -10,7 +10,6 @@ class World {
     collectibleBottles = [];
     throwableObjects = [];
     throwableBottleCount = 1;
-    level = level1;
     canvas;
     ctx;
     keyboard;
@@ -19,12 +18,23 @@ class World {
     intervals = [];
     isPaused = false;
     gameOverTriggered = false;
+    showEndScreen = false;
+    gameOverImg;
+    youWinImg;
+    animationFrameId = null;
+    endScreenTimeout = null;
+    isDestroyed = false;
 
 
     constructor(canvas, keyboard) {
         this.ctx = canvas.getContext("2d");
         this.canvas = canvas;
         this.keyboard = keyboard;
+        this.level = createLevel1();
+        this.gameOverImg = new Image();
+        this.gameOverImg.src = "assets/img/You won, you lost/Game Over.png";
+        this.youWinImg = new Image();
+        this.youWinImg.src = "assets/img/You won, you lost/You win B.png";
         this.draw();
         this.setWorld();
         this.runInterval();
@@ -45,6 +55,7 @@ class World {
     }
 
     draw() {
+        if (this.isDestroyed) return;
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
         this.ctx.translate(this.camera_x, 0);
@@ -67,8 +78,27 @@ class World {
         this.addObjectsToMap(this.throwableObjects);
         this.ctx.translate(-this.camera_x, 0);
 
+        if (this.showEndScreen) {
+            if (this.endboss && this.endboss.health <= 0 && this.youWinImg.complete) {
+                this.ctx.drawImage(this.youWinImg, 0, 0, this.canvas.width, this.canvas.height);
+            } else if (this.character.health <= 0 && this.gameOverImg.complete) {
+                this.ctx.fillStyle = "black";
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                const naturalWidth = this.gameOverImg.naturalWidth || 1;
+                const naturalHeight = this.gameOverImg.naturalHeight || 1;
+                const maxWidth = this.canvas.width * 0.8;
+                const maxHeight = this.canvas.height * 0.6;
+                const scale = Math.min(maxWidth / naturalWidth, maxHeight / naturalHeight);
+                const drawWidth = naturalWidth * scale;
+                const drawHeight = naturalHeight * scale;
+                const drawX = (this.canvas.width - drawWidth) / 2;
+                const drawY = 24;
+                this.ctx.drawImage(this.gameOverImg, drawX, drawY, drawWidth, drawHeight);
+            }
+        }
+
         let self = this;
-        requestAnimationFrame(function() {
+        this.animationFrameId = requestAnimationFrame(function() {
             self.draw();
         });
     }
@@ -204,9 +234,29 @@ class World {
         if (!characterDead && !endbossDead) return;
         this.gameOverTriggered = true;
         this.stopInput();
-        setTimeout(() => {
+        this.endScreenTimeout = setTimeout(() => {
+            if (this.isDestroyed) return;
+            this.showEndScreen = true;
             this.setPaused(true);
+            window.showGameOverActions?.();
         }, 2000);
+    }
+
+    destroy() {
+        if (this.isDestroyed) return;
+        this.isDestroyed = true;
+        this.setPaused(true);
+        this.stopInput();
+        this.intervals.forEach((intervalId) => clearInterval(intervalId));
+        this.intervals = [];
+        if (this.endScreenTimeout) {
+            clearTimeout(this.endScreenTimeout);
+            this.endScreenTimeout = null;
+        }
+        if (this.animationFrameId) {
+            cancelAnimationFrame(this.animationFrameId);
+            this.animationFrameId = null;
+        }
     }
 
     stopInput() {
