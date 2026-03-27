@@ -182,7 +182,7 @@ button:active {
     position: absolute;
     display: flex;
     flex-direction: column;
-    z-index: 10;
+    z-index: 50;
 }
 
 .start-screen {
@@ -240,6 +240,10 @@ button:active {
     cursor: pointer;
     letter-spacing: 0.03em;
     transition: background-color 0.15s;
+}
+
+.overlay-action-btn {
+    width: 200px;
 }
 
 .start-screen-btn-left {

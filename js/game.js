@@ -8,13 +8,13 @@ let areBannerControlsInitialized = false;
 let areTouchControlsInitialized = false;
 
 function showStartScreen() {
-    const screen = document.getElementById("startScreen");
-    screen?.classList.remove("d-none");
+    document.getElementById("startScreen")?.classList.remove("d-none");
+    document.getElementById("gameBanner")?.classList.add("d-none");
 }
 
 function hideStartScreen() {
-    const screen = document.getElementById("startScreen");
-    screen?.classList.add("d-none");
+    document.getElementById("startScreen")?.classList.add("d-none");
+    document.getElementById("gameBanner")?.classList.remove("d-none");
 }
 
 function startGame() {
@@ -41,13 +41,13 @@ function goToStartScreen() {
 }
 
 function showGameOverActions() {
-    const actions = document.getElementById("gameOverActions");
-    actions?.classList.remove("d-none");
+    document.getElementById("gameOverActions")?.classList.remove("d-none");
+    document.getElementById("gameBanner")?.classList.add("d-none");
 }
 
 function hideGameOverActions() {
-    const actions = document.getElementById("gameOverActions");
-    actions?.classList.add("d-none");
+    document.getElementById("gameOverActions")?.classList.add("d-none");
+    document.getElementById("gameBanner")?.classList.remove("d-none");
 }
 
 function init() {
