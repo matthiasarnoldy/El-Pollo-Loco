@@ -80,7 +80,18 @@ class World {
 
         if (this.showEndScreen) {
             if (this.endboss && this.endboss.health <= 0 && this.youWinImg.complete) {
-                this.ctx.drawImage(this.youWinImg, 0, 0, this.canvas.width, this.canvas.height);
+                this.ctx.fillStyle = "black";
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                const naturalWidth = this.youWinImg.naturalWidth || 1;
+                const naturalHeight = this.youWinImg.naturalHeight || 1;
+                const maxWidth = this.canvas.width * 0.9;
+                const maxHeight = this.canvas.height;
+                const scale = Math.min(maxWidth / naturalWidth, maxHeight / naturalHeight);
+                const drawWidth = naturalWidth * scale;
+                const drawHeight = naturalHeight * scale;
+                const drawX = (this.canvas.width - drawWidth) / 2;
+                const drawY = 96;
+                this.ctx.drawImage(this.youWinImg, drawX, drawY, drawWidth, drawHeight);
             } else if (this.character.health <= 0 && this.gameOverImg.complete) {
                 this.ctx.fillStyle = "black";
                 this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
