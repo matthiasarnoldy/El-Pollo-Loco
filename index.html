@@ -80,9 +80,42 @@
         <div id="startScreen" class="start-screen d-none">
             <img src="assets/img/9_intro_outro_screens/start/startscreen_1.png" alt="Start" class="start-screen-img">
             <div class="start-screen-actions">
-                <button class="start-screen-btn start-screen-btn-left" type="button">Legal Notice</button>
-                <button class="start-screen-btn start-screen-btn-center" type="button">Tutorials</button>
+                <button class="start-screen-btn start-screen-btn-left" type="button" onclick="showLegalNoticeDialog()">Legal Notice</button>
+                <button class="start-screen-btn start-screen-btn-center" type="button" onclick="showTutorialsDialog()">Tutorial</button>
                 <button id="btnStartGame" class="start-screen-btn start-screen-btn-right" type="button" onclick="startGame()">Play</button>
+            </div>
+        </div>
+        <div id="tutorialsDialog" class="tutorials-dialog d-none">
+            <div class="tutorials-content">
+                <h2>Tutorial</h2>
+                <div class="tutorials-text">
+                    <p><strong>Goal:</strong> Defeat the Boss Chicken by throwing salsa bottles!</p>
+                    <p><strong>Control:</strong></p>
+                    <ul>
+                        <li><strong>A / Arrow left</strong> - Move left</li>
+                        <li><strong>D / Arrow right</strong> - Move right</li>
+                        <li><strong>Space</strong> - Jump</li>
+                        <li><strong>F / Enter</strong> - Throw salsa bottles</li>
+                    </ul>
+                    <p><strong>Enemies:</strong> Kill or avoid the chickens and defeat the boss chicken!</p>
+                    <p><strong>Extras:</strong> Collect coins and salsa bottles!</p>
+                </div>
+                <button class="tutorials-close-btn" onclick="hideTutorialsDialog()">Close</button>
+            </div>
+        </div>
+        <div id="legalNoticeDialog" class="tutorials-dialog d-none">
+            <div class="tutorials-content">
+                <h2>Legal Notice</h2>
+                <div class="tutorials-text">
+                    <p><strong>Developer:</strong> Matthias Arnoldy</p>
+                    <p><strong>Address:</strong> Hauptstraße 57, 54455 Serrig</p>
+                    <p><strong>Game:</strong> El Pollo Loco</p>
+                    <p><strong>Purpose:</strong> Educational game project created for learning web development and game programming.</p>
+                    <p><strong>Assets:</strong> This game includes graphical and audio assets that are used for educational purposes.</p>
+                    <p><strong>Disclaimer:</strong> This is a student project. All content is provided as-is for educational purposes only.</p>
+                    <p><strong>Contact:</strong> For questions or concerns, please contact by email: m.arnoldy@outlook.de.</p>
+                </div>
+                <button class="tutorials-close-btn" onclick="hideLegalNoticeDialog()">Close</button>
             </div>
         </div>
         <div id="gameOverActions" class="endscreen-actions d-none">

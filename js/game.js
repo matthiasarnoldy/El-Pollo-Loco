@@ -7,14 +7,64 @@ let isFullscreenUi = false;
 let areBannerControlsInitialized = false;
 let areTouchControlsInitialized = false;
 
+function showTouchControlsForGameplay() {
+    document.querySelector(".touch-controls")?.classList.remove("d-none");
+}
+
+function hideTouchControlsForOverlay() {
+    document.querySelector(".touch-controls")?.classList.add("d-none");
+}
+
 function showStartScreen() {
     document.getElementById("startScreen")?.classList.remove("d-none");
     document.getElementById("gameBanner")?.classList.add("d-none");
+    hideTouchControlsForOverlay();
+    initTutorialsDialog();
+    initLegalNoticeDialog();
 }
 
 function hideStartScreen() {
     document.getElementById("startScreen")?.classList.add("d-none");
     document.getElementById("gameBanner")?.classList.remove("d-none");
+    showTouchControlsForGameplay();
+}
+
+function showTutorialsDialog() {
+    document.getElementById("tutorialsDialog")?.classList.remove("d-none");
+}
+
+function hideTutorialsDialog() {
+    document.getElementById("tutorialsDialog")?.classList.add("d-none");
+}
+
+function initTutorialsDialog() {
+    const dialog = document.getElementById("tutorialsDialog");
+    if (dialog) {
+        dialog.addEventListener("click", (event) => {
+            if (event.target === dialog) {
+                hideTutorialsDialog();
+            }
+        });
+    }
+}
+
+function showLegalNoticeDialog() {
+    document.getElementById("legalNoticeDialog")?.classList.remove("d-none");
+}
+
+function hideLegalNoticeDialog() {
+    document.getElementById("legalNoticeDialog")?.classList.add("d-none");
+}
+
+function initLegalNoticeDialog() {
+    const dialog = document.getElementById("legalNoticeDialog");
+    if (dialog) {
+        dialog.addEventListener("click", (event) => {
+            if (event.target === dialog) {
+                hideLegalNoticeDialog();
+            }
+        });
+    }
 }
 
 function startGame() {
@@ -43,11 +93,13 @@ function goToStartScreen() {
 function showGameOverActions() {
     document.getElementById("gameOverActions")?.classList.remove("d-none");
     document.getElementById("gameBanner")?.classList.add("d-none");
+    hideTouchControlsForOverlay();
 }
 
 function hideGameOverActions() {
     document.getElementById("gameOverActions")?.classList.add("d-none");
     document.getElementById("gameBanner")?.classList.remove("d-none");
+    showTouchControlsForGameplay();
 }
 
 function init() {
@@ -120,11 +172,19 @@ function getTouchControls() {
 function initTouchControls() {
     if (areTouchControlsInitialized) return;
     const controls = getTouchControls();
+    disableLongPressCalloutOnGameplayElements(controls);
     bindHoldControl(controls.leftButton, () => keyboard.LEFT = true, () => keyboard.LEFT = false);
     bindHoldControl(controls.rightButton, () => keyboard.RIGHT = true, () => keyboard.RIGHT = false);
     bindTapControl(controls.jumpButton, () => keyboard.SPACE = true, () => keyboard.SPACE = false);
     bindTapControl(controls.throwButton, () => keyboard.THROW = true, () => keyboard.THROW = false);
     areTouchControlsInitialized = true;
+}
+
+function disableLongPressCalloutOnGameplayElements(controls) {
+    const canvasElement = document.getElementById("canvas");
+    canvasElement?.addEventListener("contextmenu", (event) => event.preventDefault());
+    [controls.leftButton, controls.rightButton, controls.jumpButton, controls.throwButton]
+        .forEach((button) => button?.addEventListener("contextmenu", (event) => event.preventDefault()));
 }
 
 function bindHoldControl(button, onPress, onRelease) {

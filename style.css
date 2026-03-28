@@ -99,6 +99,10 @@ html, body {
     display: flex;
     justify-content: center;
     align-items: center;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 canvas {
@@ -106,6 +110,11 @@ canvas {
     aspect-ratio: 720 / 480;
     background-color: black;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
 
 .game-banner {
@@ -210,6 +219,79 @@ button:active {
     display: none;
 }
 
+.tutorials-dialog {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.tutorials-dialog.d-none {
+    display: none;
+}
+
+.tutorials-content {
+    width: 90%;
+    max-width: 600px;
+    background: rgba(0, 0, 0, 0.85);
+    border: 3px solid #FDDF77;
+    border-radius: 12px;
+    padding: 24px;
+    color: #FDDF77;
+    font-family: "playwriteMX", Arial, sans-serif;
+    max-height: 85%;
+    overflow-y: auto;
+}
+
+.tutorials-content h2 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    text-align: center;
+    font-size: 24px;
+    color: #FDDF77;
+}
+
+.tutorials-text {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.tutorials-text p {
+    margin: 8px 0;
+}
+
+.tutorials-text ul {
+    margin: 8px 0;
+    padding-left: 20px;
+}
+
+.tutorials-text li {
+    margin: 4px 0;
+}
+
+.tutorials-close-btn {
+    display: block;
+    margin: 0 auto;
+    font-family: "playwriteMX", Arial, sans-serif;
+    font-size: 16px;
+    padding: 8px 24px;
+    background-color: rgba(0, 0, 0, 0.55);
+    color: #FDDF77;
+    border: 2px solid #FDDF77;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.15s;
+}
+
+.tutorials-close-btn:hover {
+    background-color: rgba(0, 0, 0, 0.75);
+}
+
 .start-screen-img {
     position: absolute;
     inset: 0;
@@ -267,6 +349,18 @@ button:active {
     background-color: rgba(0, 0, 0, 0.75);
 }
 
+@media (max-width: 700px) {
+    .start-screen-btn,
+    .overlay-action-btn {
+        font-size: clamp(12px, 1.8vw, 16px);
+        padding: 6px 12px;
+    }
+
+    .overlay-action-btn {
+        width: 160px;
+    }
+}
+
 .touch-controls {
     position: absolute;
     left: 8px;
@@ -279,6 +373,10 @@ button:active {
     pointer-events: none;
 }
 
+.touch-controls.d-none {
+    display: none !important;
+}
+
 .touch-group {
     display: flex;
     gap: 16px;
@@ -289,6 +387,10 @@ button:active {
     border-radius: 14px;
     background-color: rgba(0, 0, 0, 0.35);
     touch-action: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .touch-icon {
@@ -314,13 +416,15 @@ button:active {
     }
 }
 
+@media (max-width: 1080px) {
+    .headline {
+        display: none;
+    }
+}
+
 @media only screen and (max-width: 720px) {
     canvas {
         width: 100%;
-    }
-
-    .headline {
-        display: none;
     }
 }
 
