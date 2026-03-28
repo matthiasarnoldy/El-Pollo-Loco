@@ -61,7 +61,9 @@ class Endboss extends MovableObject {
     ];
     world;
 
-
+    /**
+     * Creates a new Endboss instance.
+     */
     constructor() {
         super().loadImage(this.IMAGES_ALERT[0]);
         this.loadImages(this.IMAGES_WALKING);
@@ -72,6 +74,10 @@ class Endboss extends MovableObject {
         this.animate();
     }
 
+    /**
+     * Returns hitbox areas.
+        * @returns {{head: {x: number, y: number, w: number, h: number}, body: {x: number, y: number, w: number, h: number}, feet: {x: number, y: number, w: number, h: number}}}
+     */
     getHitboxAreas() {
         const { headH, headW, headL, bodyH, bodyW, bodyL, feetW, feetL } = this.bodyDimensions;
         const x = this.getHitboxLeft(), y = this.getHitboxTop();
@@ -83,6 +89,11 @@ class Endboss extends MovableObject {
         };
     }
 
+    /**
+     * Returns hit zone for object.
+        * @param {MovableObject} object
+        * @returns {("head"|"body"|"feet"|null)}
+     */
     getHitZoneForObject(object) {
         const { head, body, feet } = this.getHitboxAreas();
         if (this.overlapsArea(object, head)) return "head";
@@ -91,6 +102,12 @@ class Endboss extends MovableObject {
         return null;
     }
 
+    /**
+     * Handles overlaps area.
+        * @param {MovableObject} object
+        * @param {{x: number, y: number, w: number, h: number}} area
+        * @returns {boolean}
+     */
     overlapsArea(object, area) {
         const left = object.position_x + (object.offset?.left || 0);
         const right = object.position_x + object.width - (object.offset?.right || 0);
@@ -102,6 +119,10 @@ class Endboss extends MovableObject {
                top < area.y + area.h;
     }
 
+    /**
+     * Handles animate.
+        * @returns {void}
+     */
     animate() {
         this.animationInterval = setInterval(() => {
             if (this.world?.isPaused) return;
@@ -119,6 +140,10 @@ class Endboss extends MovableObject {
         this.world?.registerInterval(this.animationInterval);
     }
 
+    /**
+     * Starts attack cycle.
+        * @returns {void}
+     */
     startAttackCycle() {
         if (this.attackInterval) return;
         this.attackInterval = setInterval(() => {
@@ -131,6 +156,10 @@ class Endboss extends MovableObject {
         this.world?.registerInterval(this.attackInterval);
     }
 
+    /**
+     * Handles attack delay.
+        * @param {number} delayMs
+     */
     attackDelay(delayMs) {
         setTimeout(() => {
             if (this.state === "active") this.currentAttack = true;
@@ -138,6 +167,9 @@ class Endboss extends MovableObject {
         }, delayMs);
     }
 
+    /**
+     * Plays alert animation.
+     */
     playAlertAnimation() {
         this.playAnimationOnce(this.IMAGES_ALERT);
         if (this.onceDone) {
@@ -148,6 +180,9 @@ class Endboss extends MovableObject {
         }
     }
 
+    /**
+     * Plays attack animation.
+     */
     playAttackAnimation() {
         this.playAnimationOnce(this.IMAGES_ATTACK);
         if (!this.attackDamageDealt) {
@@ -163,6 +198,9 @@ class Endboss extends MovableObject {
         }
     }
 
+    /**
+     * Resets counter.
+     */
     resetCounter() {
         this.onceDone = false;
         this.onceIndex = 0;
@@ -170,10 +208,14 @@ class Endboss extends MovableObject {
         this.attackDamageDealt = false;
     }
 
+    /**
+     * Handles spawn chicken on attack.
+        * @returns {void}
+     */
     spawnChickenOnAttack() {
         if (!this.world) return;
-        const chicken = new Chicken();
-        chicken.position_x = this.position_x + (this.otherDirection ? 100 : -100);
+        const chicken = new Chicken_small();
+        chicken.position_x = this.position_x + (this.otherDirection ? 10 : -10);
         chicken.walkDirection = this.otherDirection ? 1 : 0;
         chicken.speed_x = 3;
         chicken.world = this.world;
@@ -181,6 +223,10 @@ class Endboss extends MovableObject {
         this.world.collectObjectIntervals(chicken);
     }
 
+    /**
+     * Checks whether attacking.
+        * @returns {void}
+     */
     isAttacking() {
         if (this.currentAttack) {
             this.playAttackAnimation();
@@ -191,10 +237,18 @@ class Endboss extends MovableObject {
         }
     }
 
+    /**
+     * Checks whether low health.
+        * @returns {boolean}
+     */
     isLowHealth() {
         return this.health <= this.max_health * 0.2;
     }
 
+    /**
+     * Handles deal attack damage.
+        * @returns {void}
+     */
     dealAttackDamage() {
         setTimeout(() => {
             if (!this.world?.character || this.onceDone) return;
@@ -208,6 +262,10 @@ class Endboss extends MovableObject {
         }, 500);
     }
 
+    /**
+     * Handles normal attack damage.
+        * @param {number} distance
+     */
     normalAttackDamage(distance) {
         if (distance <= this.triggerDistance) {
             const previousDamage = this.damage;
@@ -217,6 +275,10 @@ class Endboss extends MovableObject {
         }
     }
 
+    /**
+     * Handles angry attack damage.
+        * @param {number} distance
+     */
     angryAttackDamage(distance) {
         if (distance <= this.triggerDistance * 1.5) {
             const previousDamage = this.damage;
@@ -226,12 +288,19 @@ class Endboss extends MovableObject {
         }
     }
 
+    /**
+     * Updates state.
+        * @returns {void}
+     */
     updateState() {
         if (this.state !== "idle") return;
         const distance = Math.abs(this.position_x - this.world.character.position_x);
         if (distance <= this.triggerDistance) this.state = "alerting";
     }
 
+    /**
+     * Moves towards character.
+     */
     moveTowardsCharacter() {
         const characterX = this.world.character.position_x;
         if (characterX < this.position_x) {
@@ -243,12 +312,11 @@ class Endboss extends MovableObject {
         }
     }
 
+    /**
+     * Handles handle death.
+     */
     handleDeath() {
-        if (!this.deathAnimationStarted) {
-            this.deathAnimationStarted = true;
-            this.onceDone = false;
-            this.onceIndex = 0;
-        }
+        this.startDeathAnimation();
         this.speed_x = 0;
         this.currentAttack = false;
         this.state = "dead";
@@ -257,5 +325,15 @@ class Endboss extends MovableObject {
             this.onceDone = false;
             this.removeEnemy();
         }
+    }
+
+    /**
+     * Starts death animation state.
+     */
+    startDeathAnimation() {
+        if (this.deathAnimationStarted) return;
+        this.deathAnimationStarted = true;
+        this.onceDone = false;
+        this.onceIndex = 0;
     }
 }

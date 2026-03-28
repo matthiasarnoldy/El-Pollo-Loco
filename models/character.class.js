@@ -73,6 +73,9 @@ class Character extends MovableObject {
 
 
 
+    /**
+     * Creates a new Character instance.
+     */
     constructor() {
         super().loadImage(this.IMAGES_IDLE[0]);
         this.loadImages(this.IMAGES_WALKING);
@@ -84,6 +87,9 @@ class Character extends MovableObject {
         this.animate();
     }
 
+    /**
+     * Sets default image.
+     */
     setDefaultImage() {
         const path = this.IMAGES_IDLE[0];
         if (this.imageCache[path]) {
@@ -93,6 +99,10 @@ class Character extends MovableObject {
         }
     }
 
+    /**
+     * Handles animate.
+        * @returns {void}
+     */
     animate() {
         this.movementInterval = setInterval(() => {
             if (this.world?.isPaused) return;
@@ -109,18 +119,27 @@ class Character extends MovableObject {
         this.world?.registerInterval(this.animationInterval);
     }
 
+    /**
+     * Handles character move right.
+     */
     characterMoveRight() {
         if (this.world.keyboard.RIGHT && this.getHitboxRight() + 10 < this.world.level.level_end_x) {
             this.moveRight();
         }
     }
 
+    /**
+     * Handles character move left.
+     */
     characterMoveLeft() {
         if (this.world.keyboard.LEFT && this.getHitboxLeft() > -720) {
             this.moveLeft();
         }
     }
 
+    /**
+     * Handles character jump.
+     */
     characterJump() {
         if (this.world.keyboard.SPACE && !this.isAboveGround() && !this.jumpKeyHandled) {
             this.jump();
@@ -131,6 +150,9 @@ class Character extends MovableObject {
         }
     }
 
+    /**
+     * Updates camera.
+     */
     updateCamera() {
         const followOffset = 180;
         const maxCameraX = 720;

@@ -22,7 +22,9 @@ class Chicken_small extends MovableObject {
     ];
     world;
 
-
+    /**
+     * Creates a new Chicken_small instance.
+     */
     constructor() {
         super().loadImage(this.IMAGES_WALKING[0]);
         this.loadImages(this.IMAGES_WALKING);
@@ -35,6 +37,10 @@ class Chicken_small extends MovableObject {
         this.animate();
     }
 
+    /**
+     * Handles animate.
+        * @returns {void}
+     */
     animate() {
         this.movingChicken();
         this.animationInterval = setInterval(() => {
@@ -51,6 +57,9 @@ class Chicken_small extends MovableObject {
         this.world?.registerInterval(this.animationInterval);
     }
 
+    /**
+     * Handles remove enemy.
+     */
     removeEnemy() {
         if (!this.bottleDropChecked) {
             this.bottleDropChecked = true;
@@ -59,6 +68,10 @@ class Chicken_small extends MovableObject {
         super.removeEnemy();
     }
 
+    /**
+     * Handles try spawn bottle drop.
+        * @returns {void}
+     */
     trySpawnBottleDrop() {
         if (!this.world) return;
         const randomNumber = Math.random();

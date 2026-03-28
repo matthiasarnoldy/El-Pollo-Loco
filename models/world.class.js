@@ -26,21 +26,55 @@ class World {
     isDestroyed = false;
 
 
+    /**
+     * Creates a new World instance.
+        * @param {HTMLCanvasElement} canvas
+        * @param {Keyboard} keyboard
+     */
     constructor(canvas, keyboard) {
+        this.initializeCoreState(canvas, keyboard);
+        this.initializeEndScreenImages();
+        this.startWorldSystems();
+    }
+
+    /**
+     * Initializes core world state.
+     * @param {HTMLCanvasElement} canvas
+     * @param {Keyboard} keyboard
+     * @returns {void}
+     */
+    initializeCoreState(canvas, keyboard) {
         this.ctx = canvas.getContext("2d");
         this.canvas = canvas;
         this.keyboard = keyboard;
         this.level = createLevel1();
+    }
+
+    /**
+     * Initializes end screen images.
+     * @returns {void}
+     */
+    initializeEndScreenImages() {
         this.gameOverImg = new Image();
         this.gameOverImg.src = "assets/img/You won, you lost/Game Over.png";
         this.youWinImg = new Image();
         this.youWinImg.src = "assets/img/You won, you lost/You win B.png";
+    }
+
+    /**
+     * Starts world systems.
+     * @returns {void}
+     */
+    startWorldSystems() {
         this.draw();
         this.setWorld();
         this.runInterval();
         this.character.applyGravity();
     }
 
+    /**
+     * Sets world.
+     */
     setWorld() {
         this.character.world = this;
         this.level.enemies.forEach((enemy) => enemy.world = this);
@@ -54,83 +88,180 @@ class World {
         this.level.enemies.forEach((enemy) => this.collectObjectIntervals(enemy));
     }
 
+    /**
+     * Draws the object.
+        * @returns {void}
+     */
     draw() {
         if (this.isDestroyed) return;
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.clearCanvas();
+        this.drawBackgroundLayer();
+        this.drawHudLayer();
+        this.drawGameplayLayer();
+        this.drawEndScreenIfNeeded();
+        this.scheduleNextFrame();
+    }
 
+    /**
+     * Clears the full canvas.
+     * @returns {void}
+     */
+    clearCanvas() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+
+    /**
+     * Draws background objects and clouds.
+     * @returns {void}
+     */
+    drawBackgroundLayer() {
         this.ctx.translate(this.camera_x, 0);
         this.addObjectsToMap(this.level.backgroundObjects);
         this.addObjectsToMap(this.level.clouds);
-
         this.ctx.translate(-this.camera_x, 0);
+    }
+
+    /**
+     * Draws HUD bars.
+     * @returns {void}
+     */
+    drawHudLayer() {
         this.addToMap(this.statusbar_health);
-        if (this.isEndbossAwake()) {
-            this.addToMap(this.statusbar_endboss);
-        }
+        if (this.isEndbossAwake()) this.addToMap(this.statusbar_endboss);
         this.addToMap(this.statusbar_coin);
         this.addToMap(this.statusbar_bottle);
-        this.ctx.translate(this.camera_x, 0);
+    }
 
+    /**
+     * Draws character, collectibles, enemies and throwable objects.
+     * @returns {void}
+     */
+    drawGameplayLayer() {
+        this.ctx.translate(this.camera_x, 0);
         this.addToMap(this.character);
         this.addObjectsToMap(this.collectibleCoins);
         this.addObjectsToMap(this.collectibleBottles);
         this.addObjectsToMap(this.level.enemies);
         this.addObjectsToMap(this.throwableObjects);
         this.ctx.translate(-this.camera_x, 0);
-
-        if (this.showEndScreen) {
-            if (this.endboss && this.endboss.health <= 0 && this.youWinImg.complete) {
-                this.ctx.fillStyle = "black";
-                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-                const naturalWidth = this.youWinImg.naturalWidth || 1;
-                const naturalHeight = this.youWinImg.naturalHeight || 1;
-                const maxWidth = this.canvas.width * 0.9;
-                const maxHeight = this.canvas.height;
-                const scale = Math.min(maxWidth / naturalWidth, maxHeight / naturalHeight);
-                const drawWidth = naturalWidth * scale;
-                const drawHeight = naturalHeight * scale;
-                const drawX = (this.canvas.width - drawWidth) / 2;
-                const drawY = 96;
-                this.ctx.drawImage(this.youWinImg, drawX, drawY, drawWidth, drawHeight);
-            } else if (this.character.health <= 0 && this.gameOverImg.complete) {
-                this.ctx.fillStyle = "black";
-                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-                const naturalWidth = this.gameOverImg.naturalWidth || 1;
-                const naturalHeight = this.gameOverImg.naturalHeight || 1;
-                const maxWidth = this.canvas.width * 0.8;
-                const maxHeight = this.canvas.height * 0.6;
-                const scale = Math.min(maxWidth / naturalWidth, maxHeight / naturalHeight);
-                const drawWidth = naturalWidth * scale;
-                const drawHeight = naturalHeight * scale;
-                const drawX = (this.canvas.width - drawWidth) / 2;
-                const drawY = 24;
-                this.ctx.drawImage(this.gameOverImg, drawX, drawY, drawWidth, drawHeight);
-            }
-        }
-
-        let self = this;
-        this.animationFrameId = requestAnimationFrame(function() {
-            self.draw();
-        });
     }
 
+    /**
+     * Draws end screen depending on win or lose state.
+     * @returns {void}
+     */
+    drawEndScreenIfNeeded() {
+        if (!this.showEndScreen) return;
+        if (this.endboss && this.endboss.health <= 0 && this.youWinImg.complete) {
+            this.drawWinEndScreen();
+            return;
+        }
+        if (this.character.health <= 0 && this.gameOverImg.complete) {
+            this.drawGameOverEndScreen();
+        }
+    }
+
+    /**
+     * Draws the win end screen.
+     * @returns {void}
+     */
+    drawWinEndScreen() {
+        this.drawEndScreenBackground();
+        this.drawCenteredEndImage(this.youWinImg, 0.9, 1, 96);
+        this.drawWinCoinCounter();
+    }
+
+    /**
+     * Draws the game over end screen.
+     * @returns {void}
+     */
+    drawGameOverEndScreen() {
+        this.drawEndScreenBackground();
+        this.drawCenteredEndImage(this.gameOverImg, 0.8, 0.6, 24);
+    }
+
+    /**
+     * Draws the black end screen background.
+     * @returns {void}
+     */
+    drawEndScreenBackground() {
+        this.ctx.fillStyle = "black";
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+
+    /**
+     * Draws centered end screen image.
+     * @param {HTMLImageElement} image
+     * @param {number} maxWidthFactor
+     * @param {number} maxHeightFactor
+     * @param {number} drawY
+     * @returns {void}
+     */
+    drawCenteredEndImage(image, maxWidthFactor, maxHeightFactor, drawY) {
+        const naturalWidth = image.naturalWidth || 1;
+        const naturalHeight = image.naturalHeight || 1;
+        const maxWidth = this.canvas.width * maxWidthFactor;
+        const maxHeight = this.canvas.height * maxHeightFactor;
+        const scale = Math.min(maxWidth / naturalWidth, maxHeight / naturalHeight);
+        const drawWidth = naturalWidth * scale;
+        const drawHeight = naturalHeight * scale;
+        const drawX = (this.canvas.width - drawWidth) / 2;
+        this.ctx.drawImage(image, drawX, drawY, drawWidth, drawHeight);
+    }
+
+    /**
+     * Schedules next render frame.
+     * @returns {void}
+     */
+    scheduleNextFrame() {
+        this.animationFrameId = requestAnimationFrame(() => this.draw());
+    }
+
+    /**
+     * Draws the coin counter on the win end screen.
+     * @returns {void}
+     */
+    drawWinCoinCounter() {
+        const originalX = this.statusbar_coin.position_x;
+        const originalY = this.statusbar_coin.position_y;
+        const originalDisplayValue = this.statusbar_coin.displayValue;
+        this.statusbar_coin.position_x = 16;
+        this.statusbar_coin.position_y = this.canvas.height - this.statusbar_coin.height - 12;
+        this.statusbar_coin.setByValue(this.coinCount, 5);
+        this.statusbar_coin.draw(this.ctx);
+        this.statusbar_coin.position_x = originalX;
+        this.statusbar_coin.position_y = originalY;
+        this.statusbar_coin.displayValue = originalDisplayValue;
+    }
+
+    /**
+     * Handles add objects to map.
+        * @param {Array<DrawableObject|MovableObject>} objects
+     */
     addObjectsToMap(objects) {
         objects.forEach((object => {
             this.addToMap(object);
         }));
     }
 
+    /**
+     * Handles add to map.
+        * @param {DrawableObject|MovableObject} mo
+     */
     addToMap(mo) {
         if (mo.otherDirection) {
             this.flipImage(mo);
         }
         mo.draw(this.ctx);
-        mo.drawFrame(this.ctx);
         if (mo.otherDirection) {
             this.flipImageBack(mo);
         }
     }
 
+    /**
+     * Handles flip image.
+        * @param {DrawableObject|MovableObject} mo
+     */
     flipImage(mo) {
         this.ctx.save();
         this.ctx.translate(mo.width, 0);
@@ -138,11 +269,19 @@ class World {
         mo.position_x = mo.position_x * -1;
     }
 
+    /**
+     * Handles flip image back.
+        * @param {DrawableObject|MovableObject} mo
+     */
     flipImageBack(mo) {
         mo.position_x = mo.position_x * -1;
         this.ctx.restore();
     }
 
+    /**
+     * Handles run interval.
+        * @returns {void}
+     */
     runInterval() {
         this.mainInterval = setInterval(() => {
             if (this.isPaused) return;
@@ -157,6 +296,9 @@ class World {
         this.registerInterval(this.mainInterval);
     }
 
+    /**
+     * Updates statusbars.
+     */
     updateStatusbars() {
         this.statusbar_health.setPercentage(this.character.health);
         this.statusbar_coin.setByValue(this.coinCount, 5);
@@ -166,10 +308,18 @@ class World {
         }
     }
 
+    /**
+     * Checks whether endboss awake.
+        * @returns {boolean}
+     */
     isEndbossAwake() {
         return !!this.endboss && this.endboss.state !== "idle";
     }
 
+    /**
+     * Checks collectible coins.
+        * @returns {void}
+     */
     checkCollectibleCoins() {
         this.collectibleCoins = this.collectibleCoins.filter((coin) => {
             if (!this.character.isColliding(coin)) return true;
@@ -179,6 +329,10 @@ class World {
         });
     }
 
+    /**
+     * Checks collectible bottles.
+        * @returns {void}
+     */
     checkCollectibleBottles() {
         this.collectibleBottles = this.collectibleBottles.filter((bottle) => {
             if (!this.character.isColliding(bottle)) return true;
@@ -188,16 +342,30 @@ class World {
         });
     }
 
+    /**
+     * Sets paused.
+        * @param {boolean} value
+     */
     setPaused(value) {
         this.isPaused = value;
     }
 
+    /**
+     * Handles register interval.
+        * @param {(number|undefined)} intervalId
+        * @returns {(number|undefined)}
+     */
     registerInterval(intervalId) {
         if (!intervalId || this.intervals.includes(intervalId)) return intervalId;
         this.intervals.push(intervalId);
         return intervalId;
     }
 
+    /**
+     * Handles collect object intervals.
+        * @param {object} object
+        * @returns {void}
+     */
     collectObjectIntervals(object) {
         if (!object) return;
         const intervalKeys = [
@@ -212,6 +380,10 @@ class World {
         intervalKeys.forEach((key) => this.registerInterval(object[key]));
     }
 
+    /**
+     * Checks collisions.
+        * @returns {void}
+     */
     checkCollisions() {
         this.level.enemies.forEach((enemy) => {
             if (enemy.health <= 0) return;
@@ -225,6 +397,11 @@ class World {
         });
     }
 
+    /**
+     * Checks whether stomp.
+        * @param {MovableObject} enemy
+        * @returns {boolean}
+     */
     isStomp(enemy) {
         const isAboveEnemy = this.character.getLastHitboxBottom() <= enemy.getHitboxTop() + 10;
         const isFalling = this.character.speed_y <= 0;
@@ -232,12 +409,20 @@ class World {
         return isStomp;
     }
 
+    /**
+     * Handles enemy hit character.
+        * @param {MovableObject} enemy
+     */
     enemyHitCharacter(enemy) {
         this.character.hit(enemy);
         this.updateStatusbars();
         this.checkGameOver();
     }
 
+    /**
+     * Checks game over.
+        * @returns {void}
+     */
     checkGameOver() {
         if (this.gameOverTriggered) return;
         const characterDead = this.character.health <= 0;
@@ -253,6 +438,10 @@ class World {
         }, 2000);
     }
 
+    /**
+     * Handles destroy.
+        * @returns {void}
+     */
     destroy() {
         if (this.isDestroyed) return;
         this.isDestroyed = true;
@@ -270,6 +459,9 @@ class World {
         }
     }
 
+    /**
+     * Stops input.
+     */
     stopInput() {
         this.keyboard.RIGHT = false;
         this.keyboard.LEFT = false;
@@ -277,11 +469,18 @@ class World {
         this.keyboard.THROW = false;
     }
 
+    /**
+     * Handles character stomp enemy.
+        * @param {MovableObject} enemy
+     */
     characterStompEnemy(enemy) {
         enemy.hit(this.character);
         this.character.speed_y = 10;
     }
 
+    /**
+     * Checks throw objects.
+     */
     checkThrowObjects() {
         if (this.keyboard.THROW && !this.throwKeyHandled && this.throwableBottleCount > 0) {
             let bottle = new ThrowableObject(this.character.position_x + 30, this.character.position_y + 100, this.character.otherDirection, this);

@@ -1,0 +1,79 @@
+@media (max-width: 700px) {
+    .start-screen-btn,
+    .overlay-action-btn {
+        font-size: clamp(12px, 1.8vw, 16px);
+        padding: 6px 12px;
+    }
+
+    .overlay-action-btn {
+        width: 160px;
+    }
+}
+
+@media (min-width: 1080px) {
+    .game-shell {
+        width: 75%;
+        max-width: 1920px;
+    }
+
+    canvas {
+        width: 100%;
+        max-width: 1920px;
+    }
+}
+
+@media (max-width: 1080px) {
+    .headline {
+        display: none;
+    }
+}
+
+@media (max-width: 720px) {
+    canvas {
+        width: 100%;
+    }
+
+    .tutorials-text {
+        font-size: 16px;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .game-shell {
+        display: none;
+    }
+
+    .headline {
+        display: block;
+    }
+
+    .rotate-device-message {
+        display: block;
+    }
+}
+
+@media only screen and (max-height: 480px) {
+    canvas {
+        height: 100vh;
+    }
+}
+
+@media (hover: none) and (pointer: coarse) {
+    .touch-controls {
+        display: flex;
+    }
+}
+
+@media (hover: none) and (pointer: coarse) and (orientation: portrait) {
+    .game-shell {
+        display: none;
+    }
+
+    .headline {
+        display: block;
+    }
+
+    .rotate-device-message {
+        display: block;
+    }
+}

@@ -7,6 +7,12 @@ class Statusbar extends DrawableObject {
         endboss: "assets/img/7_statusbars/3_icons/icon_health_endboss.png"
     };
 
+    /**
+     * Creates a new Statusbar instance.
+     * @param {string} type
+     * @param {number} x
+     * @param {number} y
+     */
     constructor(type = "health", x = 16, y = 0) {
         super();
         const iconPath = this.IMAGES[type] || this.IMAGES.health;
@@ -18,6 +24,10 @@ class Statusbar extends DrawableObject {
         this.setPercentage(100);
     }
 
+    /**
+     * Draws the object.
+     * @param {CanvasRenderingContext2D} ctx
+     */
     draw(ctx) {
         super.draw(ctx);
         const valueText = `${Math.max(0, Math.round(this.displayValue))}`;
@@ -29,6 +39,11 @@ class Statusbar extends DrawableObject {
         ctx.fillText(valueText, this.position_x + this.width, this.position_y + this.height / 2 + textYOffset);
     }
 
+    /**
+     * Sets by value.
+     * @param {number} value
+     * @param {number} maxValue
+     */
     setByValue(value, maxValue) {
         const safeMax = Math.max(1, maxValue);
         const normalized = Math.max(0, Math.min(100, Math.round((value / safeMax) * 100)));
@@ -36,6 +51,10 @@ class Statusbar extends DrawableObject {
         this.displayValue = value;
     }
 
+    /**
+     * Sets percentage.
+     * @param {number} percentage
+     */
     setPercentage(percentage) {
         this.displayValue = percentage;
     }

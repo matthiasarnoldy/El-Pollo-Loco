@@ -30,6 +30,13 @@ class ThrowableObject extends MovableObject {
     ];
     world;
 
+    /**
+     * Creates a new ThrowableObject instance.
+        * @param {number} x
+        * @param {number} y
+        * @param {boolean} otherDirection
+        * @param {World} world
+     */
     constructor(x, y, otherDirection, world) {
         super().loadImage(this.IMAGES_ROTATING[0]);
         this.loadImages(this.IMAGES_ROTATING);
@@ -43,6 +50,10 @@ class ThrowableObject extends MovableObject {
         this.throw();
     }
 
+    /**
+     * Handles throw.
+        * @returns {void}
+     */
     throw() {
         this.animate();
         this.speed_y = 15;
@@ -57,6 +68,10 @@ class ThrowableObject extends MovableObject {
         this.world?.registerInterval(this.throwInterval);
     }
 
+    /**
+     * Handles hit enemy.
+        * @returns {void}
+     */
     hitEnemy() {
         if (this.hasHit || !this.world) return;
         const enemy = this.findCollidingEnemy();
@@ -67,12 +82,21 @@ class ThrowableObject extends MovableObject {
         this.finishHit();
     }
 
+    /**
+     * Finds colliding enemy.
+        * @returns {(MovableObject|null)}
+     */
     findCollidingEnemy() {
         return this.world.level.enemies.find(enemy =>
             enemy.health > 0 && this.isEnemyColliding(enemy)
         );
     }
 
+    /**
+     * Checks whether enemy colliding.
+        * @param {MovableObject} enemy
+        * @returns {boolean}
+     */
     isEnemyColliding(enemy) {
         if (enemy instanceof Endboss) {
             return !!enemy.getHitZoneForObject(this);
@@ -80,14 +104,28 @@ class ThrowableObject extends MovableObject {
         return this.isColliding(enemy);
     }
 
+    /**
+     * Returns hit zone.
+        * @param {MovableObject} enemy
+        * @returns {("head"|"body"|"feet"|null)}
+     */
     getHitZone(enemy) {
         return enemy instanceof Endboss ? enemy.getHitZoneForObject(this) : null;
     }
 
+    /**
+     * Handles align bottle on hit.
+        * @param {MovableObject} enemy
+     */
     alignBottleOnHit(enemy) {
         if (!(enemy instanceof Endboss)) this.getObjectCenter(enemy);
     }
 
+    /**
+     * Handles apply damage to enemy.
+        * @param {MovableObject} enemy
+        * @param {("head"|"body"|"feet"|null)} zone
+     */
     applyDamageToEnemy(enemy, zone) {
         const baseDamage = this.damage;
         if (zone) this.damage = this.getDamageByZone(zone);
@@ -95,6 +133,9 @@ class ThrowableObject extends MovableObject {
         this.damage = baseDamage;
     }
 
+    /**
+     * Handles finish hit.
+     */
     finishHit() {
         this.hasHit = true;
         this.stopGravity();
@@ -102,6 +143,11 @@ class ThrowableObject extends MovableObject {
         this.removeThrowableObject();
     }
 
+    /**
+     * Returns damage by zone.
+        * @param {("head"|"body"|"feet"|null)} zone
+        * @returns {number}
+     */
     getDamageByZone(zone) {
         const multipliers = {
             head: 1.5,
@@ -111,6 +157,10 @@ class ThrowableObject extends MovableObject {
         return Math.round(this.damage * (multipliers[zone] ?? 1));
     }
 
+    /**
+     * Handles hit ground.
+        * @returns {void}
+     */
     hitGround() {
         if (this.hasHit) return;
         const bottom = this.position_y + this.height;
@@ -124,6 +174,9 @@ class ThrowableObject extends MovableObject {
         }
     }
 
+    /**
+     * Handles remove throwable object.
+     */
     removeThrowableObject() {
         if (!this.isRemoved) {
             this.isRemoved = true;
@@ -133,6 +186,10 @@ class ThrowableObject extends MovableObject {
         }
     }
 
+    /**
+     * Plays splash animation.
+        * @returns {void}
+     */
     playSplashAnimation() {
         clearInterval(this.rotatingInterval);
         this.splashInterval = setInterval(() => {
@@ -142,6 +199,10 @@ class ThrowableObject extends MovableObject {
         this.world?.registerInterval(this.splashInterval);
     }
 
+    /**
+     * Handles animate.
+        * @returns {void}
+     */
     animate() {
         this.rotatingInterval = setInterval(() => {
             if (this.world?.isPaused) return;

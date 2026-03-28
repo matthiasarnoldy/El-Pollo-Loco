@@ -22,7 +22,9 @@ class Chicken extends MovableObject {
     ];
     world;
 
-
+    /**
+     * Creates a new Chicken instance.
+     */
     constructor() {
         super().loadImage(this.IMAGES_WALKING[0]);
         this.loadImages(this.IMAGES_WALKING);
@@ -35,6 +37,10 @@ class Chicken extends MovableObject {
         this.animate();
     }
 
+    /**
+     * Handles animate.
+        * @returns {void}
+     */
     animate() {
         this.movingChicken();
         this.animationInterval = setInterval(() => {
@@ -51,6 +57,9 @@ class Chicken extends MovableObject {
         this.world?.registerInterval(this.animationInterval);
     }
 
+    /**
+     * Handles remove enemy.
+     */
     removeEnemy() {
         if (!this.coinDropChecked) {
             this.coinDropChecked = true;
@@ -59,6 +68,10 @@ class Chicken extends MovableObject {
         super.removeEnemy();
     }
 
+    /**
+     * Handles try spawn coin drop.
+        * @returns {void}
+     */
     trySpawnCoinDrop() {
         if (!this.world) return;
         const randomNumber = Math.random();

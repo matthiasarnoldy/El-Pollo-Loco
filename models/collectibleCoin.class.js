@@ -10,6 +10,11 @@ class CollectibleCoin extends MovableObject {
     };
     IMAGE_COIN = "assets/img/8_coin/coin_1.png";
 
+    /**
+     * Creates a new CollectibleCoin instance.
+     * @param {number} positionX
+     * @param {number} positionY
+     */
     constructor(positionX = 0, positionY = 0) {
         super().loadImage(this.IMAGE_COIN);
         this.position_x = positionX;

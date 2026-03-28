@@ -1,3 +1,7 @@
+/**
+ * Returns pause icon template.
+ * @returns {string}
+ */
 function getPauseIconTemplate() {
     return `
         <svg class="bannerIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
@@ -6,6 +10,10 @@ function getPauseIconTemplate() {
     `;
 }
 
+/**
+ * Returns play icon template.
+ * @returns {string}
+ */
 function getPlayIconTemplate() {
     return `
         <svg class="bannerIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
@@ -14,6 +22,10 @@ function getPlayIconTemplate() {
     `;
 }
 
+/**
+ * Returns exit icon template.
+ * @returns {string}
+ */
 function getExitIconTemplate() {
     return `
         <svg class="bannerIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
@@ -22,6 +34,10 @@ function getExitIconTemplate() {
     `;
 }
 
+/**
+ * Returns sound on icon template.
+ * @returns {string}
+ */
 function getSoundOnIconTemplate() {
     return `
         <svg class="bannerIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
@@ -30,6 +46,10 @@ function getSoundOnIconTemplate() {
     `;
 }
 
+/**
+ * Returns sound muted icon template.
+ * @returns {string}
+ */
 function getSoundMutedIconTemplate() {
     return `
         <svg class="bannerIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
@@ -38,6 +58,10 @@ function getSoundMutedIconTemplate() {
     `;
 }
 
+/**
+ * Returns fullscreen maximize icon template.
+ * @returns {string}
+ */
 function getFullscreenMaximizeIconTemplate() {
     return `
         <svg class="bannerIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
@@ -46,6 +70,10 @@ function getFullscreenMaximizeIconTemplate() {
     `;
 }
 
+/**
+ * Returns fullscreen minimize icon template.
+ * @returns {string}
+ */
 function getFullscreenMinimizeIconTemplate() {
     return `
         <svg class="bannerIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">

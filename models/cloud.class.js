@@ -3,7 +3,10 @@ class Cloud extends MovableObject {
     height = 480;
     width = 720;
 
-
+    /**
+     * Creates a new Cloud instance.
+     * @param {string} path
+     */
     constructor(path) {
         super().loadImage(path);
 

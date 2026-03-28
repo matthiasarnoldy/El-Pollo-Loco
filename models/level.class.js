@@ -6,6 +6,14 @@ class Level {
     collectibleCoins;
     level_end_x = 720 * 9;
 
+    /**
+     * Creates a new Level instance.
+        * @param {Array<MovableObject>} enemies
+        * @param {Array<Cloud>} clouds
+        * @param {Array<BackgroundObject>} backgroundObjects
+        * @param {Array<CollectibleBottle>} collectibleBottles
+        * @param {Array<CollectibleCoin>} collectibleCoins
+     */
     constructor(enemies, clouds, backgroundObjects, collectibleBottles = [], collectibleCoins = []) {
         this.enemies = enemies;
         this.clouds = clouds;
@@ -14,7 +22,11 @@ class Level {
         this.collectibleCoins = collectibleCoins;
     }
 
-
+    /**
+     * Creates background objects for the level.
+        * @param {number} amount
+        * @returns {Array<BackgroundObject>}
+     */
     static createBackgroundObjects(amount) {
         let backgrounds = [];
         for (let i = 0; i < amount; i++) {
@@ -30,6 +42,11 @@ class Level {
         return backgrounds;
     }
 
+    /**
+     * Creates collectible bottle objects.
+        * @param {number} amount
+        * @returns {Array<CollectibleBottle>}
+     */
     static createCollectibleBottles(amount) {
         const bottles = [];
         const spawnRange = this.getCollectibleBottleSpawnRange();
@@ -43,6 +60,10 @@ class Level {
         return bottles;
     }
 
+    /**
+     * Returns the spawn range for collectible bottles.
+        * @returns {{minX: number, rightStart: number, leftRangeLength: number, totalRangeLength: number}}
+     */
     static getCollectibleBottleSpawnRange() {
         const minX = -700;
         const leftEnd = -300;
@@ -54,6 +75,10 @@ class Level {
         return { minX, rightStart, leftRangeLength, totalRangeLength };
     }
 
+    /**
+     * Creates collectible coin objects.
+        * @returns {Array<CollectibleCoin>}
+     */
     static createCollectibleCoins() {
         const coins = [];
         this.addSingleCoins(coins, 14);
@@ -62,6 +87,11 @@ class Level {
         return coins;
     }
 
+    /**
+     * Adds single coins to the provided array.
+        * @param {Array<CollectibleCoin>} coins
+        * @param {number} amount
+     */
     static addSingleCoins(coins, amount) {
         for (let index = 0; index < amount; index++) {
             const x = this.getRandomCoinX();
@@ -70,6 +100,11 @@ class Level {
         }
     }
 
+    /**
+     * Adds straight coin rows to the provided array.
+        * @param {Array<CollectibleCoin>} coins
+        * @param {number} rowAmount
+     */
     static addStraightCoinRows(coins, rowAmount) {
         for (let rowIndex = 0; rowIndex < rowAmount; rowIndex++) {
             const coinsInRow = 4 + Math.floor(Math.random() * 3);
@@ -83,6 +118,11 @@ class Level {
         }
     }
 
+    /**
+     * Adds arc coin rows to the provided array.
+        * @param {Array<CollectibleCoin>} coins
+        * @param {number} arcAmount
+     */
     static addArcCoinRows(coins, arcAmount) {
         for (let arcIndex = 0; arcIndex < arcAmount; arcIndex++) {
             const coinsInArc = 7;
@@ -95,6 +135,16 @@ class Level {
         }
     }
 
+    /**
+     * Adds coins in an arc pattern.
+        * @param {Array<CollectibleCoin>} coins
+        * @param {number} coinsInArc
+        * @param {number} spacing
+        * @param {number} baseY
+        * @param {number} arcHeight
+        * @param {number} startX
+        * @param {number} centerIndex
+     */
     static addArcCoins(coins, coinsInArc, spacing, baseY, arcHeight, startX, centerIndex) {
         for (let coinIndex = 0; coinIndex < coinsInArc; coinIndex++) {
             const normalized = (coinIndex - centerIndex) / centerIndex;
@@ -105,6 +155,12 @@ class Level {
         }
     }
 
+    /**
+     * Tries to add a coin at the given position.
+        * @param {Array<CollectibleCoin>} coins
+        * @param {number} initialX
+        * @param {number} initialY
+     */
     static tryAddCoin(coins, initialX, initialY) {
         const maxTries = 12;
         for (let attempt = 0; attempt < maxTries; attempt++) {
@@ -118,6 +174,13 @@ class Level {
         }
     }
 
+    /**
+     * Checks whether a new coin would overlap existing coins.
+        * @param {Array<CollectibleCoin>} coins
+        * @param {number} x
+        * @param {number} y
+        * @returns {boolean}
+     */
     static hasCoinOverlap(coins, x, y) {
         const minDistance = 64;
         const minDistanceSquared = minDistance * minDistance;
@@ -128,12 +191,22 @@ class Level {
         });
     }
 
+    /**
+     * Returns a random coin x position.
+        * @returns {number}
+     */
     static getRandomCoinX() {
         const minX = -700;
         const maxX = 720 * 9 - 900;
         return minX + Math.random() * (maxX - minX);
     }
 
+    /**
+     * Returns a random coin y position.
+        * @param {number} minY
+        * @param {number} maxY
+        * @returns {number}
+     */
     static getRandomCoinY(minY, maxY) {
         return minY + Math.random() * (maxY - minY);
     }

@@ -1,5 +1,4 @@
 const ASSET_PATHS = [
-    // Character
     "assets/img/2_character_pepe/1_idle/idle/I-1.png",
     "assets/img/2_character_pepe/1_idle/idle/I-2.png",
     "assets/img/2_character_pepe/1_idle/idle/I-3.png",
@@ -45,20 +44,14 @@ const ASSET_PATHS = [
     "assets/img/2_character_pepe/5_dead/D-55.png",
     "assets/img/2_character_pepe/5_dead/D-56.png",
     "assets/img/2_character_pepe/5_dead/D-57.png",
-
-    // Chicken normal
     "assets/img/3_enemies_chicken/chicken_normal/1_walk/1_w.png",
     "assets/img/3_enemies_chicken/chicken_normal/1_walk/2_w.png",
     "assets/img/3_enemies_chicken/chicken_normal/1_walk/3_w.png",
     "assets/img/3_enemies_chicken/chicken_normal/2_dead/dead.png",
-
-    // Chicken small
     "assets/img/3_enemies_chicken/chicken_small/1_walk/1_w.png",
     "assets/img/3_enemies_chicken/chicken_small/1_walk/2_w.png",
     "assets/img/3_enemies_chicken/chicken_small/1_walk/3_w.png",
     "assets/img/3_enemies_chicken/chicken_small/2_dead/dead.png",
-
-    // Endboss
     "assets/img/4_enemie_boss_chicken/1_walk/G1.png",
     "assets/img/4_enemie_boss_chicken/1_walk/G2.png",
     "assets/img/4_enemie_boss_chicken/1_walk/G3.png",
@@ -85,8 +78,6 @@ const ASSET_PATHS = [
     "assets/img/4_enemie_boss_chicken/5_dead/G24.png",
     "assets/img/4_enemie_boss_chicken/5_dead/G25.png",
     "assets/img/4_enemie_boss_chicken/5_dead/G26.png",
-
-    // Backgrounds
     "assets/img/5_background/layers/air.png",
     "assets/img/5_background/layers/1_first_layer/1.png",
     "assets/img/5_background/layers/1_first_layer/2.png",
@@ -95,8 +86,6 @@ const ASSET_PATHS = [
     "assets/img/5_background/layers/3_third_layer/1.png",
     "assets/img/5_background/layers/3_third_layer/2.png",
     "assets/img/5_background/layers/4_clouds/1.png",
-
-    // Bottles
     "assets/img/6_salsa_bottle/1_salsa_bottle_on_ground.png",
     "assets/img/6_salsa_bottle/2_salsa_bottle_on_ground.png",
     "assets/img/6_salsa_bottle/bottle_rotation/1_bottle_rotation.png",
@@ -109,21 +98,18 @@ const ASSET_PATHS = [
     "assets/img/6_salsa_bottle/bottle_rotation/bottle_splash/4_bottle_splash.png",
     "assets/img/6_salsa_bottle/bottle_rotation/bottle_splash/5_bottle_splash.png",
     "assets/img/6_salsa_bottle/bottle_rotation/bottle_splash/6_bottle_splash.png",
-
-    // Statusbars
     "assets/img/7_statusbars/3_icons/icon_health.png",
     "assets/img/7_statusbars/3_icons/icon_coin.png",
     "assets/img/7_statusbars/3_icons/icon_salsa_bottle.png",
     "assets/img/7_statusbars/3_icons/icon_health_endboss.png",
-
-    // Coin
     "assets/img/8_coin/coin_1.png",
-
-    // End screens
-    "assets/img/9_intro_outro_screens/game_over/oh no you lost!.png",
+    "assets/img/You won, you lost/Game Over.png",
     "assets/img/You won, you lost/You win B.png",
 ];
 
+/**
+ * Handles preload assets.
+ */
 function preloadAssets() {
     ASSET_PATHS.forEach((path) => {
         const img = new Image();

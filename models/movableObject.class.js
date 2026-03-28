@@ -23,6 +23,10 @@ class MovableObject extends DrawableObject {
         bottom: 0
     };
 
+    /**
+     * Handles apply gravity.
+        * @returns {void}
+     */
     applyGravity() {
         this.gravityInterval = setInterval(() => {
             if (this.world?.isPaused) return;
@@ -39,6 +43,9 @@ class MovableObject extends DrawableObject {
         this.world?.registerInterval(this.gravityInterval);
     }
 
+    /**
+     * Stops gravity.
+     */
     stopGravity() {
         this.lastPosition_y = this.position_y;
         this.speed_x = 0;
@@ -46,6 +53,10 @@ class MovableObject extends DrawableObject {
         this.acceleration = 0;
     }
 
+    /**
+     * Checks whether above ground.
+        * @returns {boolean}
+     */
     isAboveGround() {
         if (this instanceof ThrowableObject) {
             return true;
@@ -54,6 +65,10 @@ class MovableObject extends DrawableObject {
         }
     }
 
+    /**
+     * Plays animation.
+        * @param {string[]} images
+     */
     playAnimation(images) {
         let i = this.currentImage % images.length;
         let path = images[i];
@@ -61,6 +76,11 @@ class MovableObject extends DrawableObject {
         this.currentImage++;
     }
 
+    /**
+     * Plays animation once.
+        * @param {string[]} images
+        * @returns {void}
+     */
     playAnimationOnce(images) {
         if (this.onceDone) return;
         
@@ -73,6 +93,9 @@ class MovableObject extends DrawableObject {
         }
     }
 
+    /**
+     * Updates last action time.
+     */
     updateLastActionTime() {
         const keyboard = this.world?.keyboard;
         const isMoving = !!(keyboard?.RIGHT || keyboard?.LEFT);
@@ -83,28 +106,41 @@ class MovableObject extends DrawableObject {
         }
     }
 
+    /**
+     * Checks whether long idle.
+        * @returns {boolean}
+     */
     isLongIdle() {
         if (!this.IMAGES_IDLE_LONG) return false;
         return Date.now() - this.lastActionTime >= this.idleLongThreshold;
     }
 
+    /**
+     * Plays animations.
+     */
     playAnimations() {
         this.updateLastActionTime();
-        if (this.isDead()) {
-            this.playAnimationOnce(this.IMAGES_DEAD);
-        } else if (this.isHurt()) {
-            this.playAnimation(this.IMAGES_HURT);
-        } else if (this.isAboveGround()) {
-            this.playAnimation(this.IMAGES_JUMPING);
-        } else if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
-            this.playAnimation(this.IMAGES_WALKING);
-        } else if (this.isLongIdle()) {
-            this.playAnimation(this.IMAGES_IDLE_LONG);
-        } else {
-            this.playAnimation(this.IMAGES_IDLE);
-        }
+        const images = this.getAnimationImages();
+        const isDeadAnim = this.isDead();
+        isDeadAnim ? this.playAnimationOnce(images) : this.playAnimation(images);
     }
 
+    /**
+     * Returns animation images based on character state.
+     * @returns {string[]}
+     */
+    getAnimationImages() {
+        if (this.isDead()) return this.IMAGES_DEAD;
+        if (this.isHurt()) return this.IMAGES_HURT;
+        if (this.isAboveGround()) return this.IMAGES_JUMPING;
+        if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) return this.IMAGES_WALKING;
+        if (this.isLongIdle()) return this.IMAGES_IDLE_LONG;
+        return this.IMAGES_IDLE;
+    }
+
+    /**
+     * Handles moving chicken.
+     */
     movingChicken() {
         if (!this.world?.isPaused) {
             if (this.walkDirection < 0.5) {
@@ -122,17 +158,27 @@ class MovableObject extends DrawableObject {
         });
     }
 
+    /**
+     * Handles change direction.
+     */
     changeDirection() {
         this.changeDirectionEndOfMap();
         this.changeDirectionCollision();
     }
 
+    /**
+     * Handles change direction end of map.
+     */
     changeDirectionEndOfMap() {
         if (this.position_x <= this.min_x || this.position_x >= this.max_x) {
             this.walkDirection = this.walkDirection < 0.5 ? 1 : 0;
         }
     }
 
+    /**
+     * Handles change direction collision.
+        * @returns {void}
+     */
     changeDirectionCollision() {
         if (!this.world || !this.world.level?.enemies) return;
         const enemy = this.world.level.enemies.find(e =>
@@ -143,6 +189,10 @@ class MovableObject extends DrawableObject {
         this.directionCooldown(enemy);
     }
 
+    /**
+     * Returns random spawn x.
+        * @returns {number}
+     */
     getRandomSpawnX() {
         const leftEnd = -300;
         const rightStart = 300;
@@ -157,6 +207,11 @@ class MovableObject extends DrawableObject {
         }
     }
 
+    /**
+     * Handles direction cooldown.
+        * @param {MovableObject} enemy
+        * @returns {void}
+     */
     directionCooldown(enemy) {
         const now = Date.now();
         if (now - this.lastDirectionChange < 10000) return;
@@ -165,41 +220,75 @@ class MovableObject extends DrawableObject {
         this.position_x += (this.position_x < enemy.position_x) ? -1 : 1;
     }
 
+    /**
+     * Moves left.
+     */
     moveLeft() {
         this.position_x -= this.speed_x;
         this.otherDirection = true;
     }
 
+    /**
+     * Moves right.
+     */
     moveRight() {
         this.position_x += this.speed_x;
         this.otherDirection = false;
     }
 
+    /**
+     * Handles jump.
+     */
     jump() {
         this.speed_y = 14;
     }
     
 
+    /**
+     * Returns hitbox left.
+        * @returns {number}
+     */
     getHitboxLeft() {
         return this.position_x + this.offset.left;
     }
 
+    /**
+     * Returns hitbox right.
+        * @returns {number}
+     */
     getHitboxRight() {
         return this.position_x + this.width - this.offset.right;
     }
 
+    /**
+     * Returns hitbox top.
+        * @returns {number}
+     */
     getHitboxTop() {
         return this.position_y + this.offset.top;
     }
 
+    /**
+     * Returns hitbox bottom.
+        * @returns {number}
+     */
     getHitboxBottom() {
         return this.position_y + this.height - this.offset.bottom;
     }
 
+    /**
+     * Returns last hitbox bottom.
+        * @returns {number}
+     */
     getLastHitboxBottom() {
         return this.lastPosition_y + this.height - this.offset.bottom;
     }
 
+    /**
+     * Returns object center.
+        * @param {MovableObject} object
+        * @returns {void}
+     */
     getObjectCenter(object) {
         const objectLeft = object.position_x + (object.offset?.left || 0);
         const objectRight = object.position_x + object.width - (object.offset?.right || 0);
@@ -211,6 +300,11 @@ class MovableObject extends DrawableObject {
         this.position_y = objectCenterY - this.height / 2;
     }
 
+    /**
+     * Checks whether colliding.
+        * @param {MovableObject} mo
+        * @returns {boolean}
+     */
     isColliding(mo) {
         return this.getHitboxRight() > mo.getHitboxLeft() &&
                this.getHitboxLeft() < mo.getHitboxRight() &&
@@ -218,6 +312,10 @@ class MovableObject extends DrawableObject {
                this.getHitboxTop() < mo.getHitboxBottom();
     }
 
+    /**
+     * Handles hit.
+        * @param {MovableObject} object
+     */
     hit(object) {
         this.health -= object.damage;
         if (this.health < 0) {
@@ -227,6 +325,10 @@ class MovableObject extends DrawableObject {
         }
     }
 
+    /**
+     * Checks whether hurt.
+        * @returns {boolean}
+     */
     isHurt() {
         if (this instanceof Character || this instanceof Endboss) {
             let timePassed = new Date().getTime() - this.lastHit;
@@ -234,10 +336,17 @@ class MovableObject extends DrawableObject {
         } else return false;
     }
 
+    /**
+     * Checks whether dead.
+        * @returns {boolean}
+     */
     isDead() {
         return this.health == 0;
     }
 
+    /**
+     * Handles remove enemy.
+     */
     removeEnemy() {
         if (!this.isRemoved) {
             this.isRemoved = true;

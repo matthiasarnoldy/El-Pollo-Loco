@@ -1,3 +1,7 @@
+/**
+ * Creates level1.
+ * @returns {Level}
+ */
 function createLevel1() {
 return new Level(
     [
