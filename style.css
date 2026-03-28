@@ -236,7 +236,7 @@ button:active {
 
 .tutorials-content {
     width: 90%;
-    max-width: 600px;
+    max-width: 920px;
     background: rgba(0, 0, 0, 0.85);
     border: 3px solid #FDDF77;
     border-radius: 12px;
@@ -256,7 +256,7 @@ button:active {
 }
 
 .tutorials-text {
-    font-size: 16px;
+    font-size: 20px;
     line-height: 1.6;
     margin-bottom: 20px;
 }
@@ -422,9 +422,27 @@ button:active {
     }
 }
 
-@media only screen and (max-width: 720px) {
+@media (max-width: 720px) {
     canvas {
         width: 100%;
+    }
+
+    .tutorials-text {
+        font-size: 16px;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .game-shell {
+        display: none;
+    }
+
+    .headline {
+        display: block;
+    }
+
+    .rotate-device-message {
+        display: block;
     }
 }
 
