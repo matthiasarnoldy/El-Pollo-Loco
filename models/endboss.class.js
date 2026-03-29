@@ -66,11 +66,7 @@ class Endboss extends MovableObject {
      */
     constructor() {
         super().loadImage(this.IMAGES_ALERT[0]);
-        this.loadImages(this.IMAGES_WALKING);
-        this.loadImages(this.IMAGES_ALERT);
-        this.loadImages(this.IMAGES_ATTACK);
-        this.loadImages(this.IMAGES_HURT);
-        this.loadImages(this.IMAGES_DEAD);
+        [this.IMAGES_WALKING, this.IMAGES_ALERT, this.IMAGES_ATTACK, this.IMAGES_HURT, this.IMAGES_DEAD].forEach((images) => this.loadImages(images));
         this.animate();
     }
 
@@ -95,10 +91,9 @@ class Endboss extends MovableObject {
         * @returns {("head"|"body"|"feet"|null)}
      */
     getHitZoneForObject(object) {
-        const { head, body, feet } = this.getHitboxAreas();
-        if (this.overlapsArea(object, head)) return "head";
-        if (this.overlapsArea(object, body)) return "body";
-        if (this.overlapsArea(object, feet)) return "feet";
+        for (const [zone, area] of Object.entries(this.getHitboxAreas())) {
+            if (this.overlapsArea(object, area)) return zone;
+        }
         return null;
     }
 
@@ -145,14 +140,12 @@ class Endboss extends MovableObject {
      * @returns {boolean}
      */
     shouldSkipAnimationTick() {
-        if (this.world?.isPaused || !this.world?.character) {
+        if (this.world?.isPaused || !this.world?.character || this.health <= 0) {
             this.stopMovementSound();
+            if (this.health <= 0) this.handleDeath();
             return true;
         }
-        if (this.health > 0) return false;
-        this.stopMovementSound();
-        this.handleDeath();
-        return true;
+        return false;
     }
 
     /**
@@ -369,10 +362,18 @@ class Endboss extends MovableObject {
         });
     }
 
+    /**
+     * Returns randomized playback rate for endboss hit sound.
+     * @returns {number}
+     */
     getHitPlaybackRate() {
         return 0.86 + Math.random() * 0.12;
     }
 
+    /**
+     * Handles endboss death flow.
+     * @returns {void}
+     */
     handleDeath() {
         this.startDeathAnimation();
         this.stopMovementSound();
@@ -386,6 +387,10 @@ class Endboss extends MovableObject {
         }
     }
 
+    /**
+     * Starts death animation state.
+     * @returns {void}
+     */
     startDeathAnimation() {
         if (this.deathAnimationStarted) return;
         this.deathAnimationStarted = true;

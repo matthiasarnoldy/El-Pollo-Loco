@@ -24,12 +24,12 @@ class AudioManager {
     /**
      * Plays a sound by key.
      * @param {string} key
-     * @param {{volumeMultiplier?: number, playbackRate?: number, queueIfPlaying?: boolean, maxQueue?: number}} [options]
+     * @param {{volumeMultiplier?: number, playbackRate?: number, queueIfPlaying?: boolean, maxQueue?: number, overlapIfPlaying?: boolean}} [options]
      * @returns {void}
      */
     play(key, options = {}) {
         if (this.isMuted) return;
-        if (this.handleExistingSound(key, options)) return;
+        if (!options.overlapIfPlaying && this.handleExistingSound(key, options)) return;
         const sound = this.createSound(key, options);
         if (!sound) return;
         this.registerOneShotSound(key, sound, options);
@@ -101,7 +101,7 @@ class AudioManager {
      * Registers a one-shot sound.
      * @param {string} key
      * @param {HTMLAudioElement} sound
-     * @param {{volumeMultiplier?: number, playbackRate?: number, queueIfPlaying?: boolean, maxQueue?: number}} options
+        * @param {{volumeMultiplier?: number, playbackRate?: number, queueIfPlaying?: boolean, maxQueue?: number, overlapIfPlaying?: boolean}} options
      * @returns {void}
      */
     registerOneShotSound(key, sound, options) {
@@ -114,7 +114,7 @@ class AudioManager {
      * Handles the end of a one-shot sound.
      * @param {string} key
      * @param {HTMLAudioElement} sound
-     * @param {{volumeMultiplier?: number, playbackRate?: number, queueIfPlaying?: boolean, maxQueue?: number}} options
+        * @param {{volumeMultiplier?: number, playbackRate?: number, queueIfPlaying?: boolean, maxQueue?: number, overlapIfPlaying?: boolean}} options
      * @returns {void}
      */
     handleOneShotEnded(key, sound, options) {

@@ -25,7 +25,6 @@ class World {
     endScreenTimeout = null;
     isDestroyed = false;
 
-
     /**
      * Creates a new World instance.
         * @param {HTMLCanvasElement} canvas

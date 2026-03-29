@@ -120,10 +120,12 @@ class Chicken_small extends MovableObject {
         const wasAlive = this.health > 0;
         super.hit(object);
         if (!wasAlive) return;
+        if (this.health > 0) return;
         window.audioManager?.play("enemy.chicken.hit", {
-            playbackRate: this.getHitPlaybackRate()
+            playbackRate: this.getHitPlaybackRate(),
+            overlapIfPlaying: true
         });
-        if (this.health <= 0) window.audioManager?.stopByKey("enemy.chicken_small.walk");
+        window.audioManager?.stopByKey("enemy.chicken_small.walk");
     }
 
     /**

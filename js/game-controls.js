@@ -306,6 +306,10 @@ function setFullscreenIcon(type) {
     fullscreenButton.innerHTML = getFullscreenMaximizeIconTemplate();
 }
 
+/**
+ * Toggles fullscreen mode for the game shell.
+ * @returns {Promise<void>}
+ */
 async function toggleFullscreen() {
     const gameShell = document.querySelector(".game-shell");
     if (!gameShell) return;

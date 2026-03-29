@@ -72,8 +72,6 @@ class Character extends MovableObject {
     wasAboveGround = false;
     world;
 
-
-
     /**
      * Creates a new Character instance.
      */

@@ -83,9 +83,7 @@ class MovableObject extends DrawableObject {
      */
     playAnimationOnce(images) {
         if (this.onceDone) return;
-        
         this.img = this.imageCache[images[this.onceIndex]];
-
         if (this.onceIndex < images.length - 1) {
             this.onceIndex++;
         } else {
@@ -243,7 +241,6 @@ class MovableObject extends DrawableObject {
         this.speed_y = 14;
     }
     
-
     /**
      * Returns hitbox left.
         * @returns {number}
