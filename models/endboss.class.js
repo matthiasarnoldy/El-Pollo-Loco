@@ -125,9 +125,16 @@ class Endboss extends MovableObject {
      */
     animate() {
         this.animationInterval = setInterval(() => {
-            if (this.world?.isPaused) return;
-            if (!this.world?.character) return;
+            if (this.world?.isPaused) {
+                this.stopMovementSound();
+                return;
+            }
+            if (!this.world?.character) {
+                this.stopMovementSound();
+                return;
+            }
             if (this.health <= 0) {
+                this.stopMovementSound();
                 this.handleDeath();
                 return;
             }
@@ -186,6 +193,7 @@ class Endboss extends MovableObject {
     playAttackAnimation() {
         this.playAnimationOnce(this.IMAGES_ATTACK);
         if (!this.attackDamageDealt) {
+            window.audioManager?.play("enemy.endboss.attack");
             this.attackCount++;
             this.dealAttackDamage();
             if (this.attackCount >= 2) {
@@ -302,6 +310,7 @@ class Endboss extends MovableObject {
      * Moves towards character.
      */
     moveTowardsCharacter() {
+        const startX = this.position_x;
         const characterX = this.world.character.position_x;
         if (characterX < this.position_x) {
             this.moveLeft();
@@ -310,6 +319,28 @@ class Endboss extends MovableObject {
             this.moveRight();
             this.otherDirection = true;
         }
+        this.handleMovementSound(startX !== this.position_x);
+    }
+
+    /**
+     * Handles endboss movement sound.
+     * @param {boolean} isMoving
+     * @returns {void}
+     */
+    handleMovementSound(isMoving) {
+        if (!isMoving) {
+            this.stopMovementSound();
+            return;
+        }
+        window.audioManager?.playLoop("enemy.endboss.move");
+    }
+
+    /**
+     * Stops endboss movement sound.
+     * @returns {void}
+     */
+    stopMovementSound() {
+        window.audioManager?.stopByKey("enemy.endboss.move", { fadeOutMs: 120 });
     }
 
     /**
@@ -339,6 +370,7 @@ class Endboss extends MovableObject {
      */
     handleDeath() {
         this.startDeathAnimation();
+        this.stopMovementSound();
         this.speed_x = 0;
         this.currentAttack = false;
         this.state = "dead";

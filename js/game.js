@@ -1,11 +1,36 @@
 let canvas;
 let world;
 let keyboard = new Keyboard();
+const SOUND_MUTED_STORAGE_KEY = "el-pollo-loco.sound-muted";
 let isGamePausedUi = false;
-let isSoundMutedUi = false;
+let isSoundMutedUi = getStoredSoundMutedState();
 let isFullscreenUi = false;
 let areBannerControlsInitialized = false;
 let areTouchControlsInitialized = false;
+
+/**
+ * Returns stored muted state.
+ * @returns {boolean}
+ */
+function getStoredSoundMutedState() {
+    try {
+        return localStorage.getItem(SOUND_MUTED_STORAGE_KEY) === "true";
+    } catch {
+        return false;
+    }
+}
+
+/**
+ * Stores muted state.
+ * @param {boolean} value
+ * @returns {void}
+ */
+function storeSoundMutedState(value) {
+    try {
+        localStorage.setItem(SOUND_MUTED_STORAGE_KEY, String(value));
+    } catch {
+    }
+}
 
 /**
  * Shows touch controls for gameplay.
@@ -106,6 +131,7 @@ function startGame() {
     hideStartScreen();
     hideGameOverActions();
     init();
+    window.audioManager?.playLoop("game.soundtrack");
 }
 
 /**
@@ -117,12 +143,14 @@ function restartGame() {
     hideStartScreen();
     hideGameOverActions();
     init();
+    window.audioManager?.playLoop("game.soundtrack");
 }
 
 /**
  * Handles go to start screen.
  */
 function goToStartScreen() {
+    window.audioManager?.stopByKey("game.soundtrack", { fadeOutMs: 200 });
     cleanupWorld();
     resetUiForStartScreen();
     hideGameOverActions();
@@ -155,6 +183,7 @@ function init() {
     world = new World(canvas, keyboard);
     window.audioManager?.setMuted(isSoundMutedUi);
     initBannerControls();
+    setSoundIcon(isSoundMutedUi ? "muted" : "on");
     initTouchControls();
 }
 
@@ -364,6 +393,7 @@ function bindExitAction(controls) {
 function bindSoundAction(controls) {
     controls.soundButton?.addEventListener("click", () => {
         isSoundMutedUi = !isSoundMutedUi;
+        storeSoundMutedState(isSoundMutedUi);
         window.audioManager?.setMuted(isSoundMutedUi);
         setSoundIcon(isSoundMutedUi ? "muted" : "on");
     });

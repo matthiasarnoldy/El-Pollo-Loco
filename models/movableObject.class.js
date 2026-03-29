@@ -317,11 +317,15 @@ class MovableObject extends DrawableObject {
         * @param {MovableObject} object
      */
     hit(object) {
+        const previousHealth = this.health;
         this.health -= object.damage;
         if (this.health < 0) {
             this.health = 0
         } else {
             this.lastHit = new Date().getTime();
+        }
+        if (this instanceof Character && this.health < previousHealth) {
+            window.audioManager?.play("character.hurt");
         }
     }
 

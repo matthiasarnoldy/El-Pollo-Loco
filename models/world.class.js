@@ -143,6 +143,7 @@ class World {
         this.collectibleCoins = this.collectibleCoins.filter((coin) => {
             if (!this.character.isColliding(coin)) return true;
             this.coinCount++;
+            window.audioManager?.play("collect.coin");
             this.updateStatusbars();
             return false;
         });
@@ -156,6 +157,7 @@ class World {
         this.collectibleBottles = this.collectibleBottles.filter((bottle) => {
             if (!this.character.isColliding(bottle)) return true;
             this.throwableBottleCount++;
+            window.audioManager?.play("collect.bottle");
             this.updateStatusbars();
             return false;
         });
@@ -248,10 +250,12 @@ class World {
         const endbossDead = this.endboss && this.endboss.health <= 0;
         if (!characterDead && !endbossDead) return;
         this.gameOverTriggered = true;
+        const endSoundKey = characterDead ? "game.lose" : "game.win";
         this.stopInput();
         this.endScreenTimeout = setTimeout(() => {
             if (this.isDestroyed) return;
             this.showEndScreen = true;
+            window.audioManager?.play(endSoundKey);
             this.setPaused(true);
             window.showGameOverActions?.();
         }, 2000);
