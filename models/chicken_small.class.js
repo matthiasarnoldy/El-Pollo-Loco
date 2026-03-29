@@ -6,6 +6,7 @@ class Chicken_small extends MovableObject {
     damage = 0.25;
     isRemoved = false;
     bottleDropChecked = false;
+    lastWalkSoundAt = 0;
     offset = {
         left: 10,
         right: 10,
@@ -52,9 +53,51 @@ class Chicken_small extends MovableObject {
                 this.removeEnemy();
             } else {
                 this.playAnimation(this.IMAGES_WALKING);
+                this.playWalkSound();
             }
         }, 1000 / 4);
         this.world?.registerInterval(this.animationInterval);
+    }
+
+    /**
+     * Plays small chicken walk sound with cooldown.
+     * @returns {void}
+     */
+    playWalkSound() {
+        if (this.health <= 0) return;
+        if (!this.isVisibleInCamera()) return;
+        const now = Date.now();
+        if (now - this.lastWalkSoundAt < 1400) return;
+        this.lastWalkSoundAt = now;
+        window.audioManager?.play("enemy.chicken_small.walk", {
+            volumeMultiplier: this.getCameraDistanceVolumeMultiplier()
+        });
+    }
+
+    /**
+     * Checks whether small chicken is inside current camera viewport.
+     * @returns {boolean}
+     */
+    isVisibleInCamera() {
+        if (!this.world?.canvas) return false;
+        const viewLeft = -this.world.camera_x;
+        const viewRight = viewLeft + this.world.canvas.width;
+        return this.getHitboxRight() >= viewLeft && this.getHitboxLeft() <= viewRight;
+    }
+
+    /**
+     * Returns volume multiplier based on distance to viewport center.
+     * @returns {number}
+     */
+    getCameraDistanceVolumeMultiplier() {
+        if (!this.world?.canvas) return 0.25;
+        const viewLeft = -this.world.camera_x;
+        const viewportCenterX = viewLeft + this.world.canvas.width / 2;
+        const chickenCenterX = this.getHitboxLeft() + (this.getHitboxRight() - this.getHitboxLeft()) / 2;
+        const distanceToCenter = Math.abs(chickenCenterX - viewportCenterX);
+        const maxDistance = this.world.canvas.width / 2;
+        const normalized = Math.min(1, distanceToCenter / maxDistance);
+        return 1 - normalized * 0.75;
     }
 
     /**
@@ -66,6 +109,29 @@ class Chicken_small extends MovableObject {
             this.trySpawnBottleDrop();
         }
         super.removeEnemy();
+    }
+
+    /**
+     * Handles hit.
+     * @param {MovableObject} object
+     * @returns {void}
+     */
+    hit(object) {
+        const wasAlive = this.health > 0;
+        super.hit(object);
+        if (!wasAlive) return;
+        window.audioManager?.play("enemy.chicken.hit", {
+            playbackRate: this.getHitPlaybackRate()
+        });
+        if (this.health <= 0) window.audioManager?.stopByKey("enemy.chicken_small.walk");
+    }
+
+    /**
+     * Returns randomized playback rate for hit sound.
+     * @returns {number}
+     */
+    getHitPlaybackRate() {
+        return 0.95 + Math.random() * 0.14;
     }
 
     /**

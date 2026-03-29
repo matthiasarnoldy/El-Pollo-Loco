@@ -139,8 +139,17 @@ class ThrowableObject extends MovableObject {
     finishHit() {
         this.hasHit = true;
         this.stopGravity();
+        this.playBottleBreakSound();
         this.playSplashAnimation();
         this.removeThrowableObject();
+    }
+
+    /**
+     * Plays bottle break sound.
+     * @returns {void}
+     */
+    playBottleBreakSound() {
+        window.audioManager?.play("bottle.break");
     }
 
     /**
@@ -169,6 +178,7 @@ class ThrowableObject extends MovableObject {
             this.hasHit = true;
             this.stopGravity();
             clearInterval(this.throwInterval);
+            this.playBottleBreakSound();
             this.playSplashAnimation();
             this.removeThrowableObject();
         }

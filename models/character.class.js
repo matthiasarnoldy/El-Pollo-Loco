@@ -69,6 +69,7 @@ class Character extends MovableObject {
         "assets/img/2_character_pepe/5_dead/D-56.png",
         "assets/img/2_character_pepe/5_dead/D-57.png",
     ];
+    wasAboveGround = false;
     world;
 
 
@@ -84,6 +85,7 @@ class Character extends MovableObject {
         this.loadImages(this.IMAGES_IDLE_LONG);
         this.loadImages(this.IMAGES_HURT);
         this.loadImages(this.IMAGES_DEAD);
+        this.wasAboveGround = this.isAboveGround();
         this.animate();
     }
 
@@ -105,10 +107,17 @@ class Character extends MovableObject {
      */
     animate() {
         this.movementInterval = setInterval(() => {
-            if (this.world?.isPaused) return;
+            if (this.world?.isPaused) {
+                this.stopRunningSound();
+                this.stopSnoreSound();
+                return;
+            }
             this.characterMoveRight();
             this.characterMoveLeft();
             this.characterJump();
+            this.handleLandingSound();
+            this.handleRunningSound();
+            this.handleSnoreSound();
             this.updateCamera();
         }, 1000 / 60);
         this.animationInterval = setInterval(() => {
@@ -117,6 +126,65 @@ class Character extends MovableObject {
         }, 1000 / 8);
         this.world?.registerInterval(this.movementInterval);
         this.world?.registerInterval(this.animationInterval);
+    }
+
+    /**
+     * Handles landing sound transitions.
+     * @returns {void}
+     */
+    handleLandingSound() {
+        const isCurrentlyAboveGround = this.isAboveGround();
+        if (this.wasAboveGround && !isCurrentlyAboveGround && this.speed_y === 0) {
+            window.audioManager?.play("character.land");
+        }
+        this.wasAboveGround = isCurrentlyAboveGround;
+    }
+
+    /**
+     * Handles running sound transitions.
+     * @returns {void}
+     */
+    handleRunningSound() {
+        const isMoving = this.world.keyboard.RIGHT || this.world.keyboard.LEFT;
+        const isOnGround = !this.isAboveGround();
+        const canRunSound = isMoving && isOnGround && this.health > 0;
+        if (canRunSound) {
+            this.stopSnoreSound();
+            window.audioManager?.playLoop("character.running");
+            return;
+        }
+        this.stopRunningSound();
+    }
+
+    /**
+     * Stops running sound.
+     * @returns {void}
+     */
+    stopRunningSound() {
+        window.audioManager?.stopByKey("character.running");
+    }
+
+    /**
+     * Handles snore sound transitions.
+     * @returns {void}
+     */
+    handleSnoreSound() {
+        const isMoving = this.world.keyboard.RIGHT || this.world.keyboard.LEFT;
+        const isActing = this.world.keyboard.SPACE || this.world.keyboard.THROW;
+        const canSnore = this.isLongIdle() && !isMoving && !isActing && !this.isAboveGround() && !this.isDead() && !this.isHurt();
+        if (canSnore) {
+            window.audioManager?.playLoop("character.snore", { fadeInMs: 150 });
+            return;
+        }
+        this.stopSnoreSound();
+    }
+
+    /**
+     * Stops snore sound.
+     * @returns {void}
+     */
+    stopSnoreSound() {
+        window.audioManager?.stopByKey("character.snore", { fadeOutMs: 150 });
     }
 
     /**

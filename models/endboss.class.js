@@ -313,6 +313,28 @@ class Endboss extends MovableObject {
     }
 
     /**
+     * Handles hit.
+     * @param {MovableObject} object
+     * @returns {void}
+     */
+    hit(object) {
+        const wasAlive = this.health > 0;
+        super.hit(object);
+        if (!wasAlive) return;
+        window.audioManager?.play("enemy.endboss.hit", {
+            playbackRate: this.getHitPlaybackRate()
+        });
+    }
+
+    /**
+     * Returns randomized playback rate for endboss hit sound.
+     * @returns {number}
+     */
+    getHitPlaybackRate() {
+        return 0.86 + Math.random() * 0.12;
+    }
+
+    /**
      * Handles handle death.
      */
     handleDeath() {

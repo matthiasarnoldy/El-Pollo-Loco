@@ -153,6 +153,7 @@ function hideGameOverActions() {
 function init() {
     canvas = document.getElementById("canvas");
     world = new World(canvas, keyboard);
+    window.audioManager?.setMuted(isSoundMutedUi);
     initBannerControls();
     initTouchControls();
 }
@@ -363,6 +364,7 @@ function bindExitAction(controls) {
 function bindSoundAction(controls) {
     controls.soundButton?.addEventListener("click", () => {
         isSoundMutedUi = !isSoundMutedUi;
+        window.audioManager?.setMuted(isSoundMutedUi);
         setSoundIcon(isSoundMutedUi ? "muted" : "on");
     });
 }
