@@ -107,17 +107,9 @@ class Character extends MovableObject {
      */
     animate() {
         this.movementInterval = setInterval(() => {
-            if (this.world?.isPaused) {
-                this.stopRunningSound();
-                this.stopSnoreSound();
-                return;
-            }
-            this.characterMoveRight();
-            this.characterMoveLeft();
-            this.characterJump();
-            this.handleLandingSound();
-            this.handleRunningSound();
-            this.handleSnoreSound();
+            if (this.stopSounds()) return;
+            this.handleMovement();
+            this.handleSounds();
             this.updateCamera();
         }, 1000 / 60);
         this.animationInterval = setInterval(() => {
@@ -126,6 +118,37 @@ class Character extends MovableObject {
         }, 1000 / 8);
         this.world?.registerInterval(this.movementInterval);
         this.world?.registerInterval(this.animationInterval);
+    }
+
+    /**
+     * Stops all character loop sounds.
+     * @returns {boolean}
+     */
+    stopSounds() {
+        if (!this.world?.isPaused) return false;
+        this.stopRunningSound();
+        this.stopSnoreSound();
+        return true;
+    }
+
+    /**
+     * Handles movement actions.
+     * @returns {void}
+     */
+    handleMovement() {
+        this.characterMoveRight();
+        this.characterMoveLeft();
+        this.characterJump();
+    }
+
+    /**
+     * Handles all character-related sounds.
+     * @returns {void}
+     */
+    handleSounds() {
+        this.handleLandingSound();
+        this.handleRunningSound();
+        this.handleSnoreSound();
     }
 
     /**

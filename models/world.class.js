@@ -79,6 +79,7 @@ class World {
     setWorld() {
         this.character.world = this;
         this.level.enemies.forEach((enemy) => enemy.world = this);
+        this.level.clouds.forEach((cloud) => cloud.world = this);
         this.endboss = this.level.enemies.find((enemy) => enemy instanceof Endboss) || null;
         this.collectibleCoins = this.level.collectibleCoins || [];
         this.collectibleCoins.forEach((coin) => coin.world = this);
@@ -86,6 +87,7 @@ class World {
         this.collectibleBottles.forEach((bottle) => bottle.world = this);
         this.updateStatusbars();
         this.collectObjectIntervals(this.character);
+        this.level.clouds.forEach((cloud) => this.collectObjectIntervals(cloud));
         this.level.enemies.forEach((enemy) => this.collectObjectIntervals(enemy));
     }
 

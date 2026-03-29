@@ -3,31 +3,49 @@
  * @returns {Level}
  */
 function createLevel1() {
-return new Level(
-    [
-        new Chicken(),
-        new Chicken(),
-        new Chicken(),
-        new Chicken(),
-        new Chicken(),
-        new Chicken(),
-        new Chicken(),
-        new Chicken_small(),
-        new Chicken_small(),
-        new Chicken_small(),
-        new Chicken_small(),
-        new Chicken_small(),
-        new Chicken_small(),
-        new Chicken_small(),
-        new Chicken_small(),
+    return new Level(
+        createLevel1Enemies(),
+        Level.createClouds(7),
+        Level.createBackgroundObjects(10),
+        Level.createCollectibleBottles(4),
+        Level.createCollectibleCoins()
+    );
+}
+
+/**
+ * Creates enemy objects for level1.
+ * @returns {Array<MovableObject>}
+ */
+function createLevel1Enemies() {
+    return [
+        ...createLevel1Chickens(8),
+        ...createLevel1SmallChickens(8),
         new Endboss()
-    ],
-    [
-        new Cloud("assets/img/5_background/layers/4_clouds/1.png"),
-        // new Cloud("assets/img/5_background/layers/4_clouds/2.png"),
-    ],
-    Level.createBackgroundObjects(10),
-    Level.createCollectibleBottles(4),
-    Level.createCollectibleCoins()
-);
+    ];
+}
+
+/**
+ * Creates normal chickens for level1.
+ * @param {number} amount
+ * @returns {Array<Chicken>}
+ */
+function createLevel1Chickens(amount) {
+    const chickens = [];
+    for (let index = 0; index < amount; index++) {
+        chickens.push(new Chicken());
+    }
+    return chickens;
+}
+
+/**
+ * Creates small chickens for level1.
+ * @param {number} amount
+ * @returns {Array<Chicken_small>}
+ */
+function createLevel1SmallChickens(amount) {
+    const chickens = [];
+    for (let index = 0; index < amount; index++) {
+        chickens.push(new Chicken_small());
+    }
+    return chickens;
 }

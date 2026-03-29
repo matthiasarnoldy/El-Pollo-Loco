@@ -125,26 +125,51 @@ class Endboss extends MovableObject {
      */
     animate() {
         this.animationInterval = setInterval(() => {
-            if (this.world?.isPaused) {
-                this.stopMovementSound();
-                return;
-            }
-            if (!this.world?.character) {
-                this.stopMovementSound();
-                return;
-            }
-            if (this.health <= 0) {
-                this.stopMovementSound();
-                this.handleDeath();
-                return;
-            }
-            this.updateState();
-            if (this.state === "active") this.moveTowardsCharacter();
-            if (this.state === "idle") this.img = this.imageCache[this.IMAGES_ALERT[0]];
-            else if (this.state === "alerting") this.playAlertAnimation();
-            else if (this.state === "active") this.isAttacking();
+            this.handleAnimationTick();
         }, 1000 / 4);
         this.world?.registerInterval(this.animationInterval);
+    }
+
+    /**
+     * Handles one animation tick.
+     * @returns {void}
+     */
+    handleAnimationTick() {
+        if (this.shouldSkipAnimationTick()) return;
+        this.updateState();
+        this.handleStateAnimation();
+    }
+
+    /**
+     * Checks whether animation tick should be skipped.
+     * @returns {boolean}
+     */
+    shouldSkipAnimationTick() {
+        if (this.world?.isPaused || !this.world?.character) {
+            this.stopMovementSound();
+            return true;
+        }
+        if (this.health > 0) return false;
+        this.stopMovementSound();
+        this.handleDeath();
+        return true;
+    }
+
+    /**
+     * Handles animation behavior by state.
+     * @returns {void}
+     */
+    handleStateAnimation() {
+        if (this.state === "active") {
+            this.moveTowardsCharacter();
+            this.isAttacking();
+            return;
+        }
+        if (this.state === "idle") {
+            this.img = this.imageCache[this.IMAGES_ALERT[0]];
+            return;
+        }
+        if (this.state === "alerting") this.playAlertAnimation();
     }
 
     /**
@@ -261,39 +286,26 @@ class Endboss extends MovableObject {
         setTimeout(() => {
             if (!this.world?.character || this.onceDone) return;
             const distance = Math.abs((this.position_x + this.width / 2) - (this.world.character.position_x + this.world.character.width / 2));
-            if (this.isLowHealth()) {
-                this.angryAttackDamage(distance);
-            } else {
-                this.normalAttackDamage(distance);
-            }
+            const isAngry = this.isLowHealth();
+            const rangeMultiplier = isAngry ? 1.5 : 1;
+            const damageMultiplier = isAngry ? 1.5 : 1;
+            this.applyAttackDamage(distance, rangeMultiplier, damageMultiplier);
             this.onceDone = false;
         }, 500);
     }
 
     /**
-     * Handles normal attack damage.
+     * Applies attack damage with range and damage multipliers.
         * @param {number} distance
+        * @param {number} rangeMultiplier
+        * @param {number} damageMultiplier
      */
-    normalAttackDamage(distance) {
-        if (distance <= this.triggerDistance) {
-            const previousDamage = this.damage;
-            this.damage = this.attackDamage;
-            this.world.enemyHitCharacter(this);
-            this.damage = previousDamage;  
-        }
-    }
-
-    /**
-     * Handles angry attack damage.
-        * @param {number} distance
-     */
-    angryAttackDamage(distance) {
-        if (distance <= this.triggerDistance * 1.5) {
-            const previousDamage = this.damage;
-            this.damage = this.attackDamage * 1.5;
-            this.world.enemyHitCharacter(this);
-            this.damage = previousDamage;  
-        }
+    applyAttackDamage(distance, rangeMultiplier, damageMultiplier) {
+        if (distance > this.triggerDistance * rangeMultiplier) return;
+        const previousDamage = this.damage;
+        this.damage = this.attackDamage * damageMultiplier;
+        this.world.enemyHitCharacter(this);
+        this.damage = previousDamage;
     }
 
     /**
@@ -357,17 +369,10 @@ class Endboss extends MovableObject {
         });
     }
 
-    /**
-     * Returns randomized playback rate for endboss hit sound.
-     * @returns {number}
-     */
     getHitPlaybackRate() {
         return 0.86 + Math.random() * 0.12;
     }
 
-    /**
-     * Handles handle death.
-     */
     handleDeath() {
         this.startDeathAnimation();
         this.stopMovementSound();
@@ -381,9 +386,6 @@ class Endboss extends MovableObject {
         }
     }
 
-    /**
-     * Starts death animation state.
-     */
     startDeathAnimation() {
         if (this.deathAnimationStarted) return;
         this.deathAnimationStarted = true;

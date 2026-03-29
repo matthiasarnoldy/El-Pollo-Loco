@@ -43,6 +43,23 @@ class Level {
     }
 
     /**
+     * Creates cloud objects.
+     * @param {number} amount
+     * @returns {Array<Cloud>}
+     */
+    static createClouds(amount) {
+        const clouds = [];
+        const minX = -720;
+        const maxX = 720 * 9;
+        for (let index = 0; index < amount; index++) {
+            const randomX = minX + Math.random() * (maxX - minX);
+            const randomDirection = Math.random() < 0.5 ? -1 : 1;
+            clouds.push(new Cloud("assets/img/5_background/layers/4_clouds/1.png", randomX, randomDirection));
+        }
+        return clouds;
+    }
+
+    /**
      * Creates collectible bottle objects.
         * @param {number} amount
         * @returns {Array<CollectibleBottle>}
