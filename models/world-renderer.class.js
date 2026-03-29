@@ -218,26 +218,7 @@ class WorldRenderer {
     addToMap(mo) {
         if (mo.otherDirection) this.flipImage(mo);
         mo.draw(this.world.ctx);
-        this.drawOffsetFrame(mo);
         if (mo.otherDirection) this.flipImageBack(mo);
-    }
-
-    /**
-     * Draws a red frame around movable object offset bounds.
-     * @param {DrawableObject|MovableObject} mo
-     * @returns {void}
-     */
-    drawOffsetFrame(mo) {
-        if (!(mo instanceof MovableObject)) return;
-        const x = mo.getHitboxLeft();
-        const y = mo.getHitboxTop();
-        const w = mo.getHitboxRight() - x;
-        const h = mo.getHitboxBottom() - y;
-        this.world.ctx.save();
-        this.world.ctx.strokeStyle = "red";
-        this.world.ctx.lineWidth = 2;
-        this.world.ctx.strokeRect(x, y, w, h);
-        this.world.ctx.restore();
     }
 
     /**
