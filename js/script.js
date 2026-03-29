@@ -246,3 +246,117 @@ function initBannerControls() {
     bindDropdownClose(controls);
     areBannerControlsInitialized = true;
 }
+
+window.addEventListener("keydown", handleGlobalKeydown);
+window.addEventListener("keyup", handleGlobalKeyup);
+window.addEventListener("blur", resetKeyboardState);
+document.addEventListener("visibilitychange", handleVisibilityChange);
+
+/**
+ * Handles global keydown for gameplay keys.
+ * @param {KeyboardEvent} event
+ * @returns {void}
+ */
+function handleGlobalKeydown(event) {
+    if (isGameplayKey(event.code)) event.preventDefault();
+    updateKeyboardState(event.code, true);
+}
+
+/**
+ * Handles global keyup for gameplay keys.
+ * @param {KeyboardEvent} event
+ * @returns {void}
+ */
+function handleGlobalKeyup(event) {
+    if (isGameplayKey(event.code)) event.preventDefault();
+    updateKeyboardState(event.code, false);
+}
+
+/**
+ * Handles page visibility changes.
+ * @returns {void}
+ */
+function handleVisibilityChange() {
+    if (!document.hidden) return;
+    resetKeyboardState();
+}
+
+/**
+ * Resets all keyboard movement/action states.
+ * @returns {void}
+ */
+function resetKeyboardState() {
+    keyboard.RIGHT = false;
+    keyboard.LEFT = false;
+    keyboard.SPACE = false;
+    keyboard.THROW = false;
+}
+
+/**
+ * Updates keyboard state.
+ * @param {string} code
+ * @param {boolean} isPressed
+ */
+function updateKeyboardState(code, isPressed) {
+    if (isInputLocked()) {
+        resetKeyboardState();
+        return;
+    }
+    if (isRightKey(code)) keyboard.RIGHT = isPressed;
+    else if (isLeftKey(code)) keyboard.LEFT = isPressed;
+    else if (isThrowKey(code)) keyboard.THROW = isPressed;
+    else if (isJumpKey(code)) keyboard.SPACE = isPressed;
+}
+
+/**
+ * Checks whether gameplay input should be blocked.
+ * @returns {boolean}
+ */
+function isInputLocked() {
+    return !!world?.gameOverTriggered;
+}
+
+/**
+ * Checks whether code belongs to gameplay controls.
+ * @param {string} code
+ * @returns {boolean}
+ */
+function isGameplayKey(code) {
+    return isRightKey(code) || isLeftKey(code) || isThrowKey(code) || isJumpKey(code);
+}
+
+/**
+ * Checks whether right key.
+ * @param {string} code
+ * @returns {boolean}
+ */
+function isRightKey(code) {
+    return code === "ArrowRight" || code === "KeyD";
+}
+
+/**
+ * Checks whether left key.
+ * @param {string} code
+ * @returns {boolean}
+ */
+function isLeftKey(code) {
+    return code === "ArrowLeft" || code === "KeyA";
+}
+
+/**
+ * Checks whether throw key.
+ * @param {string} code
+ * @returns {boolean}
+ */
+function isThrowKey(code) {
+    return code === "Enter" || code === "KeyF";
+}
+
+/**
+ * Checks whether jump key.
+ * @param {string} code
+ * @returns {boolean}
+ */
+function isJumpKey(code) {
+    return code === "Space";
+}

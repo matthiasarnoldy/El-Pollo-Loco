@@ -387,7 +387,3 @@ button:active {
     display: block;
     fill: #FDDF77;
 }
-
-.touch-btn:active {
-    border: 2px solid #FDDF77;
-}

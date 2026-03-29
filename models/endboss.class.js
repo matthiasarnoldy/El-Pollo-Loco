@@ -3,8 +3,9 @@ class Endboss extends MovableObject {
     width = 300;
     position_x = 6000;
     position_y = 90;
-    speed_x = 4;
-    triggerDistance = 400;
+    speed_x = 20;
+    alertDistance = 400;
+    attackDistance = 700;
     state = "idle";
     currentAttack = false;
     attackInterval = null;
@@ -13,8 +14,8 @@ class Endboss extends MovableObject {
     attackCount = 0;
     health = 180;
     max_health = 180;
-    damage = 0.8;
-    attackDamage = 15;
+    damage = 1;
+    attackDamage = 20;
     bodyDimensions = { headH: 65, headW: 65, headL: 20, bodyH: 125, bodyW: 200, bodyL: 20, feetW: 80, feetL: 80 };
     offset = {
         left: 35,
@@ -121,7 +122,7 @@ class Endboss extends MovableObject {
     animate() {
         this.animationInterval = setInterval(() => {
             this.handleAnimationTick();
-        }, 1000 / 4);
+        }, 1000 / 6);
         this.world?.registerInterval(this.animationInterval);
     }
 
@@ -174,10 +175,10 @@ class Endboss extends MovableObject {
         this.attackInterval = setInterval(() => {
             if (this.world?.isPaused) return;
             if (this.state !== "active") return;
-            const randomFactor = Math.random() * 5 + 5;
+            const randomFactor = Math.random() * 5;
             const delayMs = randomFactor * 1000;
             this.attackDelay(delayMs);
-        }, 10000);
+        }, 5000);
         this.world?.registerInterval(this.attackInterval);
     }
 
@@ -201,7 +202,7 @@ class Endboss extends MovableObject {
             this.onceDone = false;
             this.onceIndex = 0;
             this.state = "active";
-            this.attackDelay(5000);
+            this.attackDelay(1000);
         }
     }
 
@@ -268,7 +269,7 @@ class Endboss extends MovableObject {
         * @returns {boolean}
      */
     isLowHealth() {
-        return this.health <= this.max_health * 0.2;
+        return this.health <= this.max_health * 0.4;
     }
 
     /**
@@ -294,7 +295,7 @@ class Endboss extends MovableObject {
         * @param {number} damageMultiplier
      */
     applyAttackDamage(distance, rangeMultiplier, damageMultiplier) {
-        if (distance > this.triggerDistance * rangeMultiplier) return;
+        if (distance > this.attackDistance * rangeMultiplier) return;
         const previousDamage = this.damage;
         this.damage = this.attackDamage * damageMultiplier;
         this.world.enemyHitCharacter(this);
@@ -308,7 +309,7 @@ class Endboss extends MovableObject {
     updateState() {
         if (this.state !== "idle") return;
         const distance = Math.abs(this.position_x - this.world.character.position_x);
-        if (distance <= this.triggerDistance) this.state = "alerting";
+        if (distance <= this.alertDistance) this.state = "alerting";
     }
 
     /**

@@ -3,10 +3,10 @@ class CollectibleCoin extends MovableObject {
     height = 90;
     position_y = 0;
     offset = {
-        left: 18,
-        right: 18,
-        top: 18,
-        bottom: 18
+        left: 30,
+        right: 30,
+        top: 30,
+        bottom: 30
     };
     IMAGE_COIN = "assets/img/8_coin/coin_1.png";
 

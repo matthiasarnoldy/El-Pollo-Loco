@@ -14,6 +14,8 @@ class World {
     ctx;
     keyboard;
     throwKeyHandled = false;
+    throwCooldownMs = 5000;
+    lastThrowAt = 0;
     camera_x = 0;
     intervals = [];
     isPaused = false;
@@ -209,14 +211,22 @@ class World {
     checkCollisions() {
         this.level.enemies.forEach((enemy) => {
             if (enemy.health <= 0) return;
-            if (this.character.isColliding(enemy)) {
-                if (this.isStomp(enemy)) {
-                    this.characterStompEnemy(enemy);
-                } else {
-                    this.enemyHitCharacter(enemy);
-                }
-            }
+            if (this.isStomp(enemy)) return this.characterStompEnemy(enemy);
+            if (!this.character.isColliding(enemy)) return;
+            if (this.shouldEnemyDamageCharacter(enemy)) this.enemyHitCharacter(enemy);
         });
+    }
+
+    /**
+     * Checks whether enemy collision should damage character.
+     * @param {MovableObject} enemy
+     * @returns {boolean}
+     */
+    shouldEnemyDamageCharacter(enemy) {
+        const hitboxHeight = enemy.getHitboxBottom() - enemy.getHitboxTop();
+        const safeTopZone = Math.max(10, Math.min(20, hitboxHeight * 0.4));
+        const characterBottom = this.character.getHitboxBottom();
+        return characterBottom > enemy.getHitboxTop() + safeTopZone;
     }
 
     /**
@@ -225,10 +235,16 @@ class World {
         * @returns {boolean}
      */
     isStomp(enemy) {
-        const isAboveEnemy = this.character.getLastHitboxBottom() <= enemy.getHitboxTop() + 10;
-        const isFalling = this.character.speed_y <= 0;
-        const isStomp = isAboveEnemy && isFalling;
-        return isStomp;
+        const isHorizontallyOverlapping = this.character.getHitboxRight() > enemy.getHitboxLeft() &&
+            this.character.getHitboxLeft() < enemy.getHitboxRight();
+        if (!isHorizontallyOverlapping) return false;
+        const enemyTop = enemy.getHitboxTop();
+        const previousBottom = this.character.getLastHitboxBottom();
+        const currentBottom = this.character.getHitboxBottom();
+        const isFalling = this.character.speed_y < 0;
+        const crossedEnemyTop = previousBottom < enemyTop - 2 && currentBottom >= enemyTop - 2;
+        const isAtTopEdge = currentBottom >= enemyTop - 6 && currentBottom <= enemyTop + 8;
+        return isFalling && (crossedEnemyTop || isAtTopEdge);
     }
 
     /**
@@ -306,16 +322,42 @@ class World {
      * Checks throw objects.
      */
     checkThrowObjects() {
-        if (this.keyboard.THROW && !this.throwKeyHandled && this.throwableBottleCount > 0) {
-            let bottle = new ThrowableObject(this.character.position_x + 30, this.character.position_y + 100, this.character.otherDirection, this);
-            this.throwableObjects.push(bottle);
-            this.collectObjectIntervals(bottle);
-            this.throwableBottleCount--;
-            this.updateStatusbars();
-            this.throwKeyHandled = true;
-        }
-        if (!this.keyboard.THROW) {
-            this.throwKeyHandled = false;
-        }
+        if (!this.keyboard.THROW) return this.throwKeyHandled = false;
+        if (this.throwKeyHandled || !this.canThrowBottleNow()) return;
+        this.throwBottle();
+        this.throwKeyHandled = true;
+    }
+
+    /**
+     * Checks whether bottle can be thrown now.
+     * @returns {boolean}
+     */
+    canThrowBottleNow() {
+        if (this.throwableBottleCount <= 0) return false;
+        return Date.now() - this.lastThrowAt >= this.throwCooldownMs;
+    }
+
+    /**
+     * Throws one bottle and updates related state.
+     * @returns {void}
+     */
+    throwBottle() {
+        const bottle = new ThrowableObject(this.character.position_x + 30, this.character.position_y + 100, this.character.otherDirection, this);
+        this.throwableObjects.push(bottle);
+        this.collectObjectIntervals(bottle);
+        this.throwableBottleCount--;
+        this.lastThrowAt = Date.now();
+        this.updateStatusbars();
+    }
+
+    /**
+     * Returns normalized bottle throw cooldown progress.
+     * @returns {number}
+     */
+    getThrowCooldownProgress() {
+        if (this.lastThrowAt === 0) return 1;
+        const elapsedMs = Date.now() - this.lastThrowAt;
+        const progress = elapsedMs / this.throwCooldownMs;
+        return Math.max(0, Math.min(1, progress));
     }
 }

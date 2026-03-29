@@ -77,7 +77,6 @@ class ThrowableObject extends MovableObject {
         const enemy = this.findCollidingEnemy();
         if (!enemy) return;
         const zone = this.getHitZone(enemy);
-        this.alignBottleOnHit(enemy);
         this.applyDamageToEnemy(enemy, zone);
         this.finishHit();
     }
@@ -111,14 +110,6 @@ class ThrowableObject extends MovableObject {
      */
     getHitZone(enemy) {
         return enemy instanceof Endboss ? enemy.getHitZoneForObject(this) : null;
-    }
-
-    /**
-     * Handles align bottle on hit.
-        * @param {MovableObject} enemy
-     */
-    alignBottleOnHit(enemy) {
-        if (!(enemy instanceof Endboss)) this.getObjectCenter(enemy);
     }
 
     /**

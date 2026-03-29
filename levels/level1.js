@@ -18,8 +18,8 @@ function createLevel1() {
  */
 function createLevel1Enemies() {
     return [
-        ...createLevel1Chickens(8),
-        ...createLevel1SmallChickens(8),
+        ...createLevel1Chickens(10),
+        ...createLevel1SmallChickens(10),
         new Endboss()
     ];
 }

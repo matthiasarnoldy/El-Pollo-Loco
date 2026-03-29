@@ -51,6 +51,60 @@ class WorldRenderer {
         if (this.world.isEndbossAwake()) this.addToMap(this.world.statusbar_endboss);
         this.addToMap(this.world.statusbar_coin);
         this.addToMap(this.world.statusbar_bottle);
+        this.drawBottleCooldownRing();
+    }
+
+    /**
+     * Draws bottle throw cooldown ring around bottle icon.
+     * @returns {void}
+     */
+    drawBottleCooldownRing() {
+        const progress = this.world.getThrowCooldownProgress();
+        if (progress >= 1) return;
+        const icon = this.world.statusbar_bottle;
+        const centerX = icon.position_x + icon.width / 2;
+        const centerY = icon.position_y + icon.height / 2;
+        const radius = Math.max(icon.width, icon.height) / 2 - 2;
+        this.drawCooldownRingTrack(centerX, centerY, radius);
+        this.drawCooldownRingProgress(centerX, centerY, radius, progress);
+    }
+
+    /**
+     * Draws the cooldown ring background track.
+     * @param {number} centerX
+     * @param {number} centerY
+     * @param {number} radius
+     * @returns {void}
+     */
+    drawCooldownRingTrack(centerX, centerY, radius) {
+        this.world.ctx.save();
+        this.world.ctx.strokeStyle = "rgba(255, 0, 0, 0.25)";
+        this.world.ctx.lineWidth = 4;
+        this.world.ctx.beginPath();
+        this.world.ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+        this.world.ctx.stroke();
+        this.world.ctx.restore();
+    }
+
+    /**
+     * Draws cooldown ring progress arc.
+     * @param {number} centerX
+     * @param {number} centerY
+     * @param {number} radius
+     * @param {number} progress
+     * @returns {void}
+     */
+    drawCooldownRingProgress(centerX, centerY, radius, progress) {
+        const startAngle = -Math.PI / 2;
+        const endAngle = startAngle + progress * Math.PI * 2;
+        this.world.ctx.save();
+        this.world.ctx.strokeStyle = "#ff0000";
+        this.world.ctx.lineWidth = 4;
+        this.world.ctx.lineCap = "round";
+        this.world.ctx.beginPath();
+        this.world.ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+        this.world.ctx.stroke();
+        this.world.ctx.restore();
     }
 
     /**
@@ -164,7 +218,26 @@ class WorldRenderer {
     addToMap(mo) {
         if (mo.otherDirection) this.flipImage(mo);
         mo.draw(this.world.ctx);
+        this.drawOffsetFrame(mo);
         if (mo.otherDirection) this.flipImageBack(mo);
+    }
+
+    /**
+     * Draws a red frame around movable object offset bounds.
+     * @param {DrawableObject|MovableObject} mo
+     * @returns {void}
+     */
+    drawOffsetFrame(mo) {
+        if (!(mo instanceof MovableObject)) return;
+        const x = mo.getHitboxLeft();
+        const y = mo.getHitboxTop();
+        const w = mo.getHitboxRight() - x;
+        const h = mo.getHitboxBottom() - y;
+        this.world.ctx.save();
+        this.world.ctx.strokeStyle = "red";
+        this.world.ctx.lineWidth = 2;
+        this.world.ctx.strokeRect(x, y, w, h);
+        this.world.ctx.restore();
     }
 
     /**

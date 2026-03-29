@@ -282,22 +282,6 @@ class MovableObject extends DrawableObject {
     }
 
     /**
-     * Returns object center.
-        * @param {MovableObject} object
-        * @returns {void}
-     */
-    getObjectCenter(object) {
-        const objectLeft = object.position_x + (object.offset?.left || 0);
-        const objectRight = object.position_x + object.width - (object.offset?.right || 0);
-        const objectTop = object.position_y + (object.offset?.top || 0);
-        const objectBottom = object.position_y + object.height - (object.offset?.bottom || 0);
-        const objectCenterX = (objectLeft + objectRight) / 2;
-        const objectCenterY = (objectTop + objectBottom) / 2;
-        this.position_x = objectCenterX - this.width / 2;
-        this.position_y = objectCenterY - this.height / 2;
-    }
-
-    /**
      * Checks whether colliding.
         * @param {MovableObject} mo
         * @returns {boolean}

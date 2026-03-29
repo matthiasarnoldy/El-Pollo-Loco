@@ -8,8 +8,8 @@ class Character extends MovableObject {
     damage = 40;
     offset = {
         left: 25,
-        right: 35,
-        top: 110,
+        right: 30,
+        top: 85,
         bottom: 10
     };
     IMAGES_WALKING = [
