@@ -2,8 +2,8 @@ class World {
     character = new Character();
     endboss = null;
     statusbar_health = new Statusbar("health", 16, 0);
-    statusbar_coin = new Statusbar("coin", 160, 0);
-    statusbar_bottle = new Statusbar("bottle", 264, 0);
+    statusbar_coin = new Statusbar("coin", 168, 0);
+    statusbar_bottle = new Statusbar("bottle", 280, 0);
     statusbar_endboss = new Statusbar("endboss", 16, 64);
     coinCount = 0;
     collectibleCoins = [];
@@ -278,11 +278,11 @@ class World {
         }, 2000);
     }
 
-    /**
-     * Handles destroy.
-        * @returns {void}
-     */
-    destroy() {
+     /**
+      * Disposes world runtime resources.
+          * @returns {void}
+      */
+     disposeWorldRuntime() {
         if (this.isDestroyed) return;
         this.isDestroyed = true;
         this.setPaused(true);

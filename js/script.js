@@ -198,7 +198,7 @@ function init() {
  */
 function cleanupWorld() {
     if (!world) return;
-    world.destroy?.();
+    world.disposeWorldRuntime?.();
     world = null;
 }
 
